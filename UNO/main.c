@@ -6,7 +6,7 @@
 typedef struct {
     int color;     // 0 = rojo, 1 = amarillo, 2 = celeste, 3 = verde
     int num;       // 1 al 9
-    int jugador;
+    int jugador;   // 1 al 4
     int especial;  // -1 = normal, 0 = cambia color, 1 = +4, 2 = saltar turno, 3 = +2, 4 = cambiar orden
 }Carta;
 
@@ -18,7 +18,8 @@ void dibujarCarta(ALLEGRO_BITMAP* cartas, Carta carta, int x, int y)
 
     if (carta.especial == -1)
     {
-        al_draw_bitmap_region(cartas, 0.2 + anchoCarta * (carta.num-1), 1 + largoCarta * carta.color, anchoCarta, largoCarta, x, y, 0);
+        al_draw_bitmap_region(cartas, 0.2 + anchoCarta * (carta.num-1), 1 + largoCarta * carta.color, anchoCarta, largoCarta,
+                x - (anchoCarta / 2), y - (largoCarta / 2), 0);
         return;
     }
 }
@@ -76,7 +77,7 @@ int main()
             Carta carta;
             carta.color = 1; carta.num = 6; carta.especial = -1;
 
-            dibujarCarta(cartas, carta, 200, 200);
+            dibujarCarta(cartas, carta, 1280 / 2, 720 / 2);
             al_flip_display();
 
             redraw = false;
