@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{0ad0ea87-2b2b-43f7-a638-4fffc97fd07d}</ProjectGuid>
-    <RootNamespace>Project1</RootNamespace>
+    <RootNamespace>UNO</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>UNO</ProjectName>
   </PropertyGroup>
