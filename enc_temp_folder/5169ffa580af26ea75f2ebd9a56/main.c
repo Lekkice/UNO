@@ -147,7 +147,7 @@ int main()
     pushBack(jugador->listaCartas, carta);
 
     Estado* estado = malloc((Estado*)sizeof(Estado));
-    estado->jugadores = createList();
+    estado->jugadores = 2;
     estado->cartasJugadas = createList();
     estado->turnoJugador = 0;
     estado->mazo = createList(); // generarMazo()
