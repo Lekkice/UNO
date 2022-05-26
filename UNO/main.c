@@ -64,14 +64,14 @@ int encontrarCarta(Jugador* jugador, int mx, int my)
     {
         if (((my > 530) && (my < 670)))
             if ((mx > (100 * i - 94 / 2)) && (mx < (100 * i + 94 / 2)))
-                return i;
+                if (countList(jugador->listaCartas) >= i)
+                    return i;
     }
     return -1;
 }
 
 void jugarCarta(Estado* estado, Jugador* jugador, int cartaMouse)
 {
-    if (cartaMouse < jugador->cantidad) return;
     List* lista = jugador->listaCartas;
     Carta* carta = firstList(lista);
     for (int i = 0; i < cartaMouse - 1; i++)
@@ -195,9 +195,12 @@ int main()
             if (!estado->pausa)
             {
                 cartaMouse = encontrarCarta(jugador, mx, my);
-                if (cartaMouse != -1) printf("%i", cartaMouse);
-                jugarCarta(estado, jugador, cartaMouse);
-                terminarTurno(estado);
+                if (cartaMouse != -1)
+                {
+                    printf("%i", cartaMouse);
+                    jugarCarta(estado, jugador, cartaMouse);
+                    terminarTurno(estado);
+                }
             }
             else
             {

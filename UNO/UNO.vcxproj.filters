@@ -30,4 +30,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="backside.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="cartas original.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="cartas.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="fondo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
