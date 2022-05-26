@@ -219,7 +219,7 @@ int main()
             cartaJugada = firstList(estado->cartasJugadas);
             if (cartaJugada)
             {
-                dibujarCarta(bitCartas, *cartaJugada, 1280 / 2, 720 / 2);
+                dibujarCarta(bitCartas, *cartaJugada, (1280 / 2) - 200, 720 / 2);
             }
             
             al_flip_display();
