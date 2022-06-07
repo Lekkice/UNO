@@ -94,6 +94,19 @@ void terminarTurno(Estado* estado)
     estado->pausa = 1;
 }
 
+bool sePuedeJugar(Estado* estado, Carta* cartaJugada);
+{
+    if (cartaJugada->especial != 1 || cartaJugada->especial != 0) {
+        Carta* ultimaCarta = lastList(estado->cartasJugadas);
+
+        if (ultimaCarta->color == cartaJugada->color)return true;
+        else if (ultimaCarta->num == cartaJugada->num)return true;
+        else return false;
+    }
+
+    return true;
+}
+
 //void siguienteTurno(Estado* estado)
 //{
 //    estado->pausa = 0;
@@ -198,8 +211,10 @@ int main()
                 if (cartaMouse != -1)
                 {
                     printf("%i", cartaMouse);
-                    jugarCarta(estado, jugador, cartaMouse);
-                    terminarTurno(estado);
+                    if (sePuedeJugar(estado, cartaJugada) {
+                        jugarCarta(estado, jugador, cartaMouse);
+                        terminarTurno(estado);
+                    }
                 }
             }
             else
