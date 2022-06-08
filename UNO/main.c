@@ -16,6 +16,7 @@ typedef struct {
     List* listaCartas;
     int cantidad;
     int jugador; // 1 al 4
+    bool esBot;
 }Jugador;
 
 typedef struct {
@@ -105,6 +106,15 @@ bool sePuedeJugar(Estado* estado, Carta* cartaJugada);
     }
 
     return true;
+}
+
+void sacarCarta(estado* partida, Jugador* jugador) {
+    Carta* newCart = firstList(Partida->mazo);
+
+    popFront(Partida->mazo);
+
+    pushBack(jugador->listaCartas, newCart);
+    jugador->cantidad++;
 }
 
 //void siguienteTurno(Estado* estado)
