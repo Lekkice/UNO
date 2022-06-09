@@ -43,5 +43,8 @@
     <Image Include="fondo.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\..\Downloads\mazo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
