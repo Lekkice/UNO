@@ -152,6 +152,7 @@
     <ClInclude Include="list.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\Downloads\mazo.png" />
     <Image Include="backside.png" />
     <Image Include="cartas original.png" />
     <Image Include="cartas.png" />

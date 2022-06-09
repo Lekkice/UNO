@@ -95,23 +95,23 @@ void terminarTurno(Estado* estado)
     estado->pausa = 1;
 }
 
-bool sePuedeJugar(Estado* estado, Carta* cartaJugada);
+bool sePuedeJugar(Estado* estado, Carta* cartaJugada)
 {
-    if (cartaJugada->especial != 1 || cartaJugada->especial != 0) {
+    if ((cartaJugada->especial != 1) || (cartaJugada->especial != 0)) 
+    {
         Carta* ultimaCarta = lastList(estado->cartasJugadas);
 
         if (ultimaCarta->color == cartaJugada->color)return true;
         else if (ultimaCarta->num == cartaJugada->num)return true;
         else return false;
     }
-
     return true;
 }
 
-void sacarCarta(estado* partida, Jugador* jugador) {
-    Carta* newCart = firstList(Partida->mazo);
+void sacarCarta(Estado* partida, Jugador* jugador) {
+    Carta* newCart = firstList(partida->mazo);
 
-    popFront(Partida->mazo);
+    popFront(partida->mazo);
 
     pushBack(jugador->listaCartas, newCart);
     jugador->cantidad++;
@@ -206,7 +206,7 @@ int main()
     estado->pausa = 0;
 
     int mx = 0, my = 0, click = 0, cartaMouse;
-    Carta* cartaJugada;
+    Carta* cartaJugada = NULL;
     al_start_timer(timer);
     while (1)
     {
@@ -250,7 +250,16 @@ int main()
                 if (cartaMouse != -1)
                 {
                     printf("%i", cartaMouse);
-                    if (sePuedeJugar(estado, cartaJugada) {
+
+                    cartaJugada = firstList(jugador->listaCartas);
+
+                    while (cartaMouse) {
+                        cartaJugada = nextlist(jugador->listaCartas);
+                        cartaMouse--;
+                    }
+
+                    if (sePuedeJugar(estado, cartaJugada)) 
+                    {
                         jugarCarta(estado, jugador, cartaMouse);
                         terminarTurno(estado);
                     }
