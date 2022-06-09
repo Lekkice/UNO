@@ -117,6 +117,35 @@ void sacarCarta(estado* partida, Jugador* jugador) {
     jugador->cantidad++;
 }
 
+void menus() {
+    int mouse = -1; // -1 = nada, 0 = crear partida, 1 = opciones, 2 = tutorial, 3 = salir
+    int mx = 0, my = 0, click = 0;
+    ALLEGRO_EVENT event;
+
+    while (1) {
+        switch (event.type)
+        {
+            case ALLEGRO_EVENT_MOUSE_AXES:
+                mx = event.mouse.x;
+                my = event.mouse.y;
+                printf("x = %i, y = %i\n", mx, my);
+                break;
+
+            case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+                click = 1;
+                break;
+        default:
+            break;
+        }
+
+        if (click == 1) {
+            if (mouse == 0)menuCrearPartida();
+            else if (mouse == 1)menuOpciones();
+            else if (mouse == 2)menuTutorial();
+            else if (mouse == 3)break;
+        }
+    }
+}
 //void siguienteTurno(Estado* estado)
 //{
 //    estado->pausa = 0;
