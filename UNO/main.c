@@ -7,6 +7,12 @@
 #include <stdio.h>
 
 typedef struct {
+    ALLEGRO_BITMAP* imagen;
+    int largo; int ancho;
+    int X; int posY;
+}Boton;
+
+typedef struct {
     int color;     // 0 = rojo, 1 = amarillo, 2 = celeste, 3 = verde
     int num;       // 1 al 9
     int especial;  // -1 = normal, 0 = cambia color, 1 = +4, 2 = saltar turno, 3 = +2, 4 = cambiar orden
@@ -25,6 +31,13 @@ typedef struct {
     int turnoJugador;
     int pausa;
 }Estado;
+
+Carta* crearCarta(int color, int num, int especial)
+{
+    Carta* carta = (Carta*)malloc(sizeof(Carta));
+    carta->color = color, carta->especial = especial, carta->num = num;
+    return carta;
+}
 
 void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta carta, int x, int y)
 {
@@ -51,19 +64,13 @@ void dibujarCartas(Jugador* jugador, ALLEGRO_BITMAP* bitCartas)
     }
 }
 
-int esCarta(ALLEGRO_BITMAP* objeto)
-{
-    if (al_get_bitmap_width(objeto) == 94 && al_get_bitmap_height(objeto) == 141) return 1;
-    return 0;
-}
-
 int encontrarCarta(Jugador* jugador, int mx, int my)
 {
     int i;
     for (i = 1; i <= 16; i++) // 100, 600; 94,141
     {
-        if (((my > 530) && (my < 670)))
-            if ((mx > (100 * i - 94 / 2)) && (mx < (100 * i + 94 / 2)))
+        if ( ((my > 530) && (my < 670)) )
+            if ( (mx > (100 * i - 94 / 2)) && (mx < (100 * i + 94 / 2)) )
                 return i;
     }
     return -1;
@@ -94,11 +101,6 @@ void terminarTurno(Estado* estado)
     estado->pausa = 1;
 }
 
-//void siguienteTurno(Estado* estado)
-//{
-//    estado->pausa = 0;
-//}
-
 int main()
 {
     al_init();
@@ -126,24 +128,13 @@ int main()
     jugador = (Jugador*)malloc(sizeof(Jugador));
     jugador->listaCartas = createList();
 
-    Carta* carta = (Carta*)malloc(sizeof(Carta));
-    carta->color = 1, carta->especial = -1, carta->num = 3;
+    Carta* carta = crearCarta(1, 3, -1);
     pushBack(jugador->listaCartas, carta);
 
-    carta = (Carta*)malloc(sizeof(Carta));
-    carta->color = 0, carta->especial = -1, carta->num = 5;
+    carta = crearCarta(0, 5, -1);
     pushBack(jugador->listaCartas, carta);
 
-    carta = (Carta*)malloc(sizeof(Carta));
-    carta->color = 1, carta->especial = -1, carta->num = 1;
-    pushBack(jugador->listaCartas, carta);
-
-    carta = (Carta*)malloc(sizeof(Carta));
-    carta->color = 3, carta->especial = -1, carta->num = 2;
-    pushBack(jugador->listaCartas, carta);
-
-    carta = (Carta*)malloc(sizeof(Carta));
-    carta->color = 2, carta->especial = -1, carta->num = 9;
+    carta = crearCarta(1, 1, -1);
     pushBack(jugador->listaCartas, carta);
 
     Estado* estado = malloc((Estado*)sizeof(Estado));
@@ -180,7 +171,7 @@ int main()
             case ALLEGRO_EVENT_MOUSE_AXES:
                 mx = event.mouse.x;
                 my = event.mouse.y;
-                printf("x = %i, y = %i\n", mx, my);
+                // printf("x = %i, y = %i\n", mx, my);
                 break;
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
                 click = 1;
@@ -191,12 +182,11 @@ int main()
 
         if (click && al_is_event_queue_empty(queue))
         {
-            //revisar si el mouse está sobre un botón o carta
+            //revisar si el mouse estï¿½ sobre un botï¿½n o carta
             if (!estado->pausa)
             {
                 cartaMouse = encontrarCarta(jugador, mx, my);
-                if (cartaMouse != -1) printf("%i", cartaMouse);
-                jugarCarta(estado, jugador, cartaMouse);
+                if (cartaMouse != -1 && cartaMouse <= countList(jugador->listaCartas)) jugarCarta(estado, jugador, cartaMouse);
                 terminarTurno(estado);
             }
             else
