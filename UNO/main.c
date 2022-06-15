@@ -9,7 +9,8 @@
 typedef struct {
     ALLEGRO_BITMAP* imagen;
     int largo; int ancho;
-    int X; int posY;
+    int posX; int posY;
+    int id; // usar para ver cual función se llama
 }Boton;
 
 typedef struct {
@@ -32,6 +33,34 @@ typedef struct {
     int turnoJugador;
     int pausa;
 }Estado;
+
+int encontrarBoton(List* botones, int mx, int my)
+{
+    Boton* boton = firstList(botones);
+    while (boton) {
+        int x = boton->posX; int y = boton->posY;
+        int largo = boton->largo; int ancho = boton->ancho;
+        if ( ((my > (y - largo/2) ) && (my < (y + largo / 2) )) )
+            if ( ( (mx > (x - ancho / 2) ) && (mx < (x + ancho / 2) )) )
+                return boton->id;
+    }
+    return -1;
+}
+
+void dibujarBotones(List* botones)
+{
+    Boton* boton = firstList(botones);
+    while (boton) {
+        dibujarBoton(boton);
+    }
+}
+
+void dibujarBoton(Boton* boton)
+{
+    int ancho = boton->ancho;
+    int largo = boton->largo;
+    al_draw_bitmap(boton->imagen, boton->posX - (ancho / 2), boton->posY - (largo / 2), 0);
+}
 
 Carta* crearCarta(int color, int num, int especial)
 {
@@ -182,7 +211,7 @@ int main()
 
         if (click && al_is_event_queue_empty(queue))
         {
-            //revisar si el mouse est� sobre un bot�n o carta
+            //revisar si el mouse est� sobre un botón o carta
             if (!estado->pausa)
             {
                 cartaMouse = encontrarCarta(jugador, mx, my);
