@@ -22,6 +22,7 @@ typedef struct {
     List* listaCartas;
     int cantidad;
     int jugador; // 1 al 4
+    bool esBot;
 }Jugador;
 
 typedef struct {
@@ -78,7 +79,6 @@ int encontrarCarta(Jugador* jugador, int mx, int my)
 
 void jugarCarta(Estado* estado, Jugador* jugador, int cartaMouse)
 {
-    if (cartaMouse < jugador->cantidad) return;
     List* lista = jugador->listaCartas;
     Carta* carta = firstList(lista);
     for (int i = 0; i < cartaMouse - 1; i++)
@@ -145,7 +145,7 @@ int main()
     estado->pausa = 0;
 
     int mx = 0, my = 0, click = 0, cartaMouse;
-    Carta* cartaJugada;
+    Carta* cartaJugada = NULL;
     al_start_timer(timer);
     while (1)
     {
@@ -206,7 +206,7 @@ int main()
             cartaJugada = firstList(estado->cartasJugadas);
             if (cartaJugada)
             {
-                dibujarCarta(bitCartas, *cartaJugada, 1280 / 2, 720 / 2);
+                dibujarCarta(bitCartas, *cartaJugada, (1280 / 2) - 200, 720 / 2);
             }
             
             al_flip_display();
