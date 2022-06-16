@@ -35,14 +35,13 @@ typedef struct {
 }Estado;
 
 void eliminarBotones(List* botones) {
-    Boton* boton = firstList(botones);
+    Boton* boton = popCurrent(botones);
     while (boton) {
         al_destroy_bitmap(boton->imagen);
         free(boton);
 
-        boton = nextList(botones);
+        boton = popCurrent(botones);
     }
-    free(botones);
 }
 
 Boton* crearBoton(ALLEGRO_BITMAP* imagen, int ancho, int largo, int posX, int posY, int id) {
