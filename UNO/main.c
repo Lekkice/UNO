@@ -8,7 +8,7 @@
 
 typedef struct {
     ALLEGRO_BITMAP* imagen;
-    int largo; int ancho;
+    int ancho; int largo;
     int posX; int posY;
     int id; // usar para ver cual función se llama
 }Boton;
@@ -34,6 +34,28 @@ typedef struct {
     int pausa;
 }Estado;
 
+void eliminarBotones(List* botones) {
+    Boton* boton = firstList(botones);
+    while (boton) {
+        al_destroy_bitmap(boton->imagen);
+        free(boton);
+
+        boton = nextList(botones);
+    }
+    free(botones);
+}
+
+Boton* crearBoton(ALLEGRO_BITMAP* imagen, int ancho, int largo, int posX, int posY, int id) {
+    Boton* boton = (Boton*)malloc(sizeof(Boton));
+    boton->imagen = imagen;
+    boton->ancho = ancho;
+    boton->largo = largo;
+    boton->posX = posX;
+    boton->posY = posY;
+    boton->id = id;
+    return boton;
+}
+
 int encontrarBoton(List* botones, int mx, int my)
 {
     Boton* boton = firstList(botones);
@@ -43,16 +65,9 @@ int encontrarBoton(List* botones, int mx, int my)
         if ( ((my > (y - largo/2) ) && (my < (y + largo / 2) )) )
             if ( ( (mx > (x - ancho / 2) ) && (mx < (x + ancho / 2) )) )
                 return boton->id;
+        boton = nextList(botones);
     }
     return -1;
-}
-
-void dibujarBotones(List* botones)
-{
-    Boton* boton = firstList(botones);
-    while (boton) {
-        dibujarBoton(boton);
-    }
 }
 
 void dibujarBoton(Boton* boton)
@@ -60,6 +75,15 @@ void dibujarBoton(Boton* boton)
     int ancho = boton->ancho;
     int largo = boton->largo;
     al_draw_bitmap(boton->imagen, boton->posX - (ancho / 2), boton->posY - (largo / 2), 0);
+}
+
+void dibujarBotones(List* botones)
+{
+    Boton* boton = firstList(botones);
+    while (boton) {
+        dibujarBoton(boton);
+        boton = nextList(botones);
+    }
 }
 
 Carta* crearCarta(int color, int num, int especial)
@@ -173,20 +197,20 @@ int main()
     estado->mazo = createList(); // generarMazo()
     estado->pausa = 0;
 
-    int mx = 0, my = 0, click = 0, cartaMouse;
+    int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
+
+    List* botones = createList();
+    // pushBack(botones, crearBoton(al_load_bitmap("button.png"), 350, 200, 500, 300, 1));
+
     al_start_timer(timer);
     while (1)
     {
         cartaMouse = -1;
+        botonMouse = -1;
         click = 0;
 
         al_wait_for_event(queue, &event);
-
-        if (event.type == ALLEGRO_EVENT_TIMER)
-            redraw = true;
-        else if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-            break;
 
         switch (event.type)
         {
@@ -211,12 +235,17 @@ int main()
 
         if (click && al_is_event_queue_empty(queue))
         {
-            //revisar si el mouse est� sobre un botón o carta
+            //revisa si el mouse está sobre un botón o carta
             if (!estado->pausa)
             {
                 cartaMouse = encontrarCarta(jugador, mx, my);
-                if (cartaMouse != -1 && cartaMouse <= countList(jugador->listaCartas)) jugarCarta(estado, jugador, cartaMouse);
-                terminarTurno(estado);
+                if (cartaMouse != -1 && cartaMouse <= countList(jugador->listaCartas))
+                {
+                    jugarCarta(estado, jugador, cartaMouse);
+                    terminarTurno(estado);
+                }
+                botonMouse = encontrarBoton(botones, mx, my);
+                if (botonMouse != -1) printf("%i", botonMouse);
             }
             else
             {
@@ -230,6 +259,10 @@ int main()
 
 
             al_draw_bitmap(fondo, 0, 0, 0);
+
+
+            dibujarBotones(botones);
+
             if (!estado->pausa) dibujarCartas(jugador, bitCartas);
 
             cartaJugada = firstList(estado->cartasJugadas);
