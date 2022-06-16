@@ -10,7 +10,7 @@ typedef struct {
     ALLEGRO_BITMAP* imagen;
     int ancho; int largo;
     int posX; int posY;
-    int id; // usar para ver cual función se llama
+    int id; // se usa para decidir cual función se debe llamar
 }Boton;
 
 typedef struct {
@@ -33,6 +33,8 @@ typedef struct {
     int turnoJugador;
     int pausa;
 }Estado;
+
+void menuEmpezarJuego(ALLEGRO_TIMER*, ALLEGRO_EVENT_QUEUE*);
 
 void eliminarBotones(List* botones) {
     Boton* boton = popCurrent(botones);
@@ -173,6 +175,78 @@ int main()
     bool done = false;
     ALLEGRO_EVENT event;
 
+    al_start_timer(timer);
+    ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
+
+    List* botones = createList(); // lista con botones del menú principal
+
+    menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
+
+    int botonMouse, click, mx, my;
+    while (1)
+    {
+        break; // eliminar cuando el menú esté listo
+
+        botonMouse = -1;
+        click = 0;
+
+        al_wait_for_event(queue, &event);
+
+        switch (event.type)
+        {
+        case ALLEGRO_EVENT_TIMER:
+            redraw = true;
+            break;
+
+        case ALLEGRO_EVENT_DISPLAY_CLOSE:
+            done = true;
+            break;
+        case ALLEGRO_EVENT_MOUSE_AXES:
+            mx = event.mouse.x;
+            my = event.mouse.y;
+            printf("x = %i, y = %i\n", mx, my);
+            break;
+        case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+            click = 1;
+            break;
+        }
+
+        if (done) break;
+
+        if (click && al_is_event_queue_empty(queue))
+        {
+            encontrarBoton(botones, mx, my);
+            // código que maneja los casos usando el id de los botones
+        }
+
+        if (redraw && al_is_event_queue_empty(queue))
+        {
+            al_clear_to_color(al_map_rgb(255, 255, 255));
+
+            al_draw_bitmap(fondo, 0, 0, 0);
+
+            dibujarBotones(botones);
+
+            al_flip_display();
+
+            redraw = false;
+        }
+    }
+    
+    al_destroy_font(font);
+    al_destroy_display(disp);
+    al_destroy_timer(timer);
+    al_destroy_event_queue(queue);
+
+    return 0;
+}
+
+void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
+
+    bool redraw = true;
+    bool done = false;
+    ALLEGRO_EVENT event;
+
     ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
     ALLEGRO_BITMAP* bitCartas = al_load_bitmap("cartas.png");
 
@@ -202,7 +276,6 @@ int main()
     List* botones = createList();
     // pushBack(botones, crearBoton(al_load_bitmap("button.png"), 350, 200, 500, 300, 1));
 
-    al_start_timer(timer);
     while (1)
     {
         cartaMouse = -1;
@@ -213,21 +286,21 @@ int main()
 
         switch (event.type)
         {
-            case ALLEGRO_EVENT_TIMER:
-                redraw = true;
-                break;
+        case ALLEGRO_EVENT_TIMER:
+            redraw = true;
+            break;
 
-            case ALLEGRO_EVENT_DISPLAY_CLOSE:
-                done = true;
-                break;
-            case ALLEGRO_EVENT_MOUSE_AXES:
-                mx = event.mouse.x;
-                my = event.mouse.y;
-                // printf("x = %i, y = %i\n", mx, my);
-                break;
-            case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-                click = 1;
-                break;
+        case ALLEGRO_EVENT_DISPLAY_CLOSE:
+            done = true;
+            break;
+        case ALLEGRO_EVENT_MOUSE_AXES:
+            mx = event.mouse.x;
+            my = event.mouse.y;
+            // printf("x = %i, y = %i\n", mx, my);
+            break;
+        case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+            click = 1;
+            break;
         }
 
         if (done) break;
@@ -269,19 +342,15 @@ int main()
             {
                 dibujarCarta(bitCartas, *cartaJugada, (1280 / 2) - 200, 720 / 2);
             }
-            
+
             al_flip_display();
 
             redraw = false;
         }
     }
 
+    // if (done) return; vuelve al menú
+
     al_destroy_bitmap(fondo);
     al_destroy_bitmap(bitCartas);
-    al_destroy_font(font);
-    al_destroy_display(disp);
-    al_destroy_timer(timer);
-    al_destroy_event_queue(queue);
-
-    return 0;
 }
