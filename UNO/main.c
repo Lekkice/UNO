@@ -63,8 +63,8 @@ int encontrarBoton(List* botones, int mx, int my)
     while (boton) {
         int x = boton->posX; int y = boton->posY;
         int largo = boton->largo; int ancho = boton->ancho;
-        if ( ((my > (y - largo/2) ) && (my < (y + largo / 2) )) )
-            if ( ( (mx > (x - ancho / 2) ) && (mx < (x + ancho / 2) )) )
+        if (((my > (y - largo / 2)) && (my < (y + largo / 2))))
+            if (((mx > (x - ancho / 2)) && (mx < (x + ancho / 2))))
                 return boton->id;
         boton = nextList(botones);
     }
@@ -101,8 +101,8 @@ void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta carta, int x, int y)
 
     if (carta.especial == -1)
     {
-        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * (carta.num-1), 1 + largoCarta * carta.color, anchoCarta, largoCarta,
-                x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * (carta.num - 1), 1 + largoCarta * carta.color, anchoCarta, largoCarta,
+            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
     }
 }
 
@@ -119,13 +119,13 @@ void dibujarCartas(Jugador* jugador, ALLEGRO_BITMAP* bitCartas)
     }
 }
 
-int encontrarCarta(Jugador* jugador, int mx, int my)
+int encontrarCarta(int mx, int my)
 {
     int i;
     for (i = 1; i <= 16; i++) // 100, 600; 94,141
     {
-        if ( ((my > 530) && (my < 670)) )
-            if ( (mx > (100 * i - 94 / 2)) && (mx < (100 * i + 94 / 2)) )
+        if (((my > 530) && (my < 670)))
+            if ((mx > (100 * i - 94 / 2)) && (mx < (100 * i + 94 / 2)))
                 return i;
     }
     return -1;
@@ -180,12 +180,10 @@ int main()
 
     List* botones = createList(); // lista con botones del menú principal
 
-    menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
-
     int botonMouse, click, mx, my;
     while (1)
     {
-        break; // eliminar cuando el menú esté listo
+        // break; // eliminar cuando el menú esté listo
 
         botonMouse = -1;
         click = 0;
@@ -225,14 +223,19 @@ int main()
 
             al_draw_bitmap(fondo, 0, 0, 0);
 
+            //al_draw_text(al_create_builtin_font(), al_map_rgb(255, 255, 255), 0, 0, 0, "AAAAAAAAAAAA");
+
             dibujarBotones(botones);
 
             al_flip_display();
 
             redraw = false;
         }
+
     }
-    
+
+    menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
+
     al_destroy_font(font);
     al_destroy_display(disp);
     al_destroy_timer(timer);
@@ -310,7 +313,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
             //revisa si el mouse está sobre un botón o carta
             if (!estado->pausa)
             {
-                cartaMouse = encontrarCarta(jugador, mx, my);
+                cartaMouse = encontrarCarta(mx, my);
                 if (cartaMouse != -1 && cartaMouse <= countList(jugador->listaCartas))
                 {
                     jugarCarta(estado, jugador, cartaMouse);
@@ -349,8 +352,10 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         }
     }
 
-    // if (done) return; vuelve al menú
-
-    al_destroy_bitmap(fondo);
-    al_destroy_bitmap(bitCartas);
+    if (done)
+    {
+        al_destroy_bitmap(fondo);
+        al_destroy_bitmap(bitCartas);
+        return;
+    }
 }
