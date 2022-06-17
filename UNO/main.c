@@ -15,8 +15,9 @@ typedef struct {
 
 typedef struct {
     int color;     // 0 = rojo, 1 = amarillo, 2 = celeste, 3 = verde
-    int num;       // 1 al 9
+    int num;       // 0 al 9
     int especial;  // -1 = normal, 0 = cambia color, 1 = +4, 2 = saltar turno, 3 = +2, 4 = cambiar orden
+    int cont;
 }Carta;
 
 typedef struct {
@@ -246,6 +247,8 @@ int main()
 
 void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
+    int i,j;
+    int posArr;
     bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
@@ -259,6 +262,31 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
     Carta* carta = crearCarta(1, 3, -1);
     pushBack(jugador->listaCartas, carta);
+
+    posArr = 0;
+    Carta* arregloCartas[54];
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 10; j++) {
+            carta->color = i;
+            carta->num = j;
+            if (carta->num == 0) {
+                carta->cont = 1;
+            }
+            else {
+                carta->cont = 2;
+            }
+            carta->especial = -1;
+            arregloCartas[posArr] = carta;
+            posArr++;
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        carta->num = NULL;
+        carta->color = i;
+        carta->especial = 2
+        carta // pasaron 2 horas y ya tengo sueño, permiso. //tengo que subir los logos y botones aun.
+
+
 
     carta = crearCarta(0, 5, -1);
     pushBack(jugador->listaCartas, carta);
