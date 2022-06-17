@@ -284,7 +284,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         carta->num = NULL;
         carta->color = i;
         carta->especial = 2
-        carta // pasaron 2 horas y ya tengo sueño, permiso. //tengo que subir los logos y botones aun.
+        carta // pasaron 2 horas y ya tengo sueño, permiso.
 
 
 
