@@ -96,6 +96,11 @@ Carta* crearCarta(int color, int num, int especial)
     return carta;
 }
 
+void sacarCarta(Estado* mazo, Jugador* listaCartas) {
+    Carta* carta = popFront(mazo);
+    pushBack(listaCartas, carta);
+}
+
 void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta carta, int x, int y)
 {
     int anchoCarta = 94;
@@ -261,8 +266,15 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     jugador = (Jugador*)malloc(sizeof(Jugador));
     jugador->listaCartas = createList();
 
-    Carta* carta = crearCarta(1, 3, -1);
-    pushBack(jugador->listaCartas, carta);
+    Estado* estado = malloc((Estado*)sizeof(Estado));
+    estado->jugadores = createList();
+    estado->cartasJugadas = createList();
+    estado->turnoJugador = 0;
+    estado->mazo = createList(); // generarMazo()
+    estado->pausa = 0;
+
+    int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
+    Carta* cartaJugada = NULL;
 
     posArr = 0;
     Carta* arregloCartas[54];
@@ -300,30 +312,25 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         posArr++;
     }
 
-    Estado* mesa;
-    mesa->mazo = createList();
+    estado->mazo = createList();
     while (i <= 108) {
         j = rand() % 54;
         if (arregloCartas[j]->cont != 0) {
             arregloCartas[j]->cont--;
-            pushBack(mesa->mazo, arregloCartas[j]);
+            pushBack(estado->mazo, arregloCartas[j]);
         }
-        i = countList(mesa->mazo);
+        i = countList(estado->mazo);
     }
 
-    i = 0;
+    j = countList(estado->jugadores);
+    firstList(jugador->jugador);
 
-
-
-    Estado* estado = malloc((Estado*)sizeof(Estado));
-    estado->jugadores = createList();
-    estado->cartasJugadas = createList();
-    estado->turnoJugador = 0;
-    estado->mazo = createList(); // generarMazo()
-    estado->pausa = 0;
-
-    int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
-    Carta* cartaJugada = NULL;
+    for (i = 0; i < j; i++) {
+        while (countList(jugador->listaCartas) < 7) {
+            sacarCarta(estado->mazo, jugador->listaCartas);
+        }
+        nextlist(jugador->jugador);
+    }
 
     List* botones = createList();
     // pushBack(botones, crearBoton(al_load_bitmap("button.png"), 350, 200, 500, 300, 1));
