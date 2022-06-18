@@ -281,11 +281,23 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         }
     }
     for (i = 0; i < 4; i++) {
-        carta->num = NULL;
-        carta->color = i;
-        carta->especial = 2
-        carta // pasaron 2 horas y ya tengo sueño, permiso.
+        for (j = 2; j < 5; j++) {
+            carta->num = NULL;
+            carta->color = i;
+            carta->especial = j;
+            carta->cont = 2;
+            arregloCartas[posArr] = carta;
+            posArr++;
+        }
 
+        for (i = 0; i < 2; i++) {
+            carta->num = NULL;
+            carta->color = NULL;
+            carta->especial = i;
+            carta->cont = 4;
+            arregloCartas[posArr] = carta;
+            posArr++;
+        }
 
 
     carta = crearCarta(0, 5, -1);
