@@ -290,32 +290,30 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
             arregloCartas[posArr] = carta;
             posArr++;
         }
+    }
+    for (i = 0; i < 2; i++) {
+        carta->num = NULL;
+        carta->color = NULL;
+        carta->especial = i;
+        carta->cont = 4;
+        arregloCartas[posArr] = carta;
+        posArr++;
+    }
 
-        for (i = 0; i < 2; i++) {
-            carta->num = NULL;
-            carta->color = NULL;
-            carta->especial = i;
-            carta->cont = 4;
-            arregloCartas[posArr] = carta;
-            posArr++;
+    Estado* mesa;
+    mesa->mazo = createList();
+    while (i <= 108) {
+        j = rand() % 54;
+        if (arregloCartas[j]->cont != 0) {
+            arregloCartas[j]->cont--;
+            pushBack(mesa->mazo, arregloCartas[j]);
         }
+        i = countList(mesa->mazo);
+    }
 
-        Estado* mesa;
-        mesa->mazo = createList();
-        while (i <= 108) {
-            j = rand() % 54;
-            if (arregloCartas[j]->cont != 0) {
-                arregloCartas[j]->cont--;
-                pushBack(mesa->mazo,arregloCartas[j]);
-            }
-            i = countList(mazo);
-        }
+    i = 0;
 
-    carta = crearCarta(0, 5, -1);
-    pushBack(jugador->listaCartas, carta);
 
-    carta = crearCarta(1, 1, -1);
-    pushBack(jugador->listaCartas, carta);
 
     Estado* estado = malloc((Estado*)sizeof(Estado));
     estado->jugadores = createList();
