@@ -306,7 +306,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
             j = rand() % 54;
             if (arregloCartas[j]->cont != 0) {
                 arregloCartas[j]->cont--;
-                pushBack(arregloCartas[j]);
+                pushBack(mesa->mazo,arregloCartas[j]);
             }
             i = countList(mazo);
         }
