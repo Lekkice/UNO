@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "list.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct {
     ALLEGRO_BITMAP* imagen;
@@ -299,6 +300,16 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
             posArr++;
         }
 
+        Estado* mesa;
+        mesa->mazo = createList();
+        while (i <= 108) {
+            j = rand() % 54;
+            if (arregloCartas[j]->cont != 0) {
+                arregloCartas[j]->cont--;
+                pushBack(arregloCartas[j]);
+            }
+            i = countList(mazo);
+        }
 
     carta = crearCarta(0, 5, -1);
     pushBack(jugador->listaCartas, carta);
