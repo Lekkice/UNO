@@ -96,7 +96,7 @@ Carta* crearCarta(int color, int num, int especial)
     return carta;
 }
 
-void sacarCarta(Estado* mazo, Jugador* listaCartas) {
+void sacarCarta(List* mazo, List* listaCartas) {
     Carta* carta = popFront(mazo);
     pushBack(listaCartas, carta);
 }
@@ -276,6 +276,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
 
+    Carta* carta = (Carta*)malloc(sizeof(Carta));
     posArr = 0;
     Carta* arregloCartas[54];
     for (i = 0; i < 4; i++) {
@@ -323,13 +324,12 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     }
 
     j = countList(estado->jugadores);
-    firstList(jugador->jugador);
-
-    for (i = 0; i < j; i++) {
+    jugador = firstList(estado->jugadores);
+    for (i = 0; i < j; i++) {                              //darle a cada jugador sus 7 cartas iniciales
         while (countList(jugador->listaCartas) < 7) {
             sacarCarta(estado->mazo, jugador->listaCartas);
         }
-        nextlist(jugador->jugador);
+        jugador = nextlist(estado->jugadores);
     }
 
     List* botones = createList();
