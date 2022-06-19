@@ -213,7 +213,7 @@ int main()
 
         if (click && al_is_event_queue_empty(queue))
         {
-            encontrarBoton(botones, mx, my);
+            botonMouse = encontrarBoton(botones, mx, my);
             // código que maneja los casos usando el id de los botones
         }
 
@@ -222,8 +222,6 @@ int main()
             al_clear_to_color(al_map_rgb(255, 255, 255));
 
             al_draw_bitmap(fondo, 0, 0, 0);
-
-            //al_draw_text(al_create_builtin_font(), al_map_rgb(255, 255, 255), 0, 0, 0, "AAAAAAAAAAAA");
 
             dibujarBotones(botones);
 
@@ -266,7 +264,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     carta = crearCarta(1, 1, -1);
     pushBack(jugador->listaCartas, carta);
 
-    Estado* estado = malloc((Estado*)sizeof(Estado));
+    Estado* estado = (Estado*)malloc(sizeof(Estado));
     estado->jugadores = createList();
     estado->cartasJugadas = createList();
     estado->turnoJugador = 0;
