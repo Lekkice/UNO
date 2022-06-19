@@ -90,7 +90,8 @@ void dibujarBotones(List* botones)
 }
 
 void generarMazo(Carta* arregloCartas[], List* mazo) {
-    int i,j = 0;
+    int i = 0;
+    int j = 0;
     while (i <= 108) {                               
         j = rand() % 54;
         if (arregloCartas[j]->cont != 0) {
@@ -199,10 +200,12 @@ int main()
 
     List* botones = createList(); // lista con botones del menú principal
 
+    menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
+
     int botonMouse, click, mx, my;
     while (1)
     {
-        // break; // eliminar cuando el menú esté listo
+        break; // eliminar cuando el menú esté listo
 
         botonMouse = -1;
         click = 0;
@@ -251,8 +254,6 @@ int main()
 
     }
 
-    menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
-
     al_destroy_font(font);
     al_destroy_display(disp);
     al_destroy_timer(timer);
@@ -262,7 +263,6 @@ int main()
 }
 
 void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
-
     int i,j;
     int posArr;
     bool redraw = true;
@@ -287,64 +287,69 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     Carta* cartaJugada = NULL;
 
     Carta* carta = (Carta*)malloc(sizeof(Carta));         //crear arreglo con todas las cartas
-    posArr = 0;
-    Carta* arregloCartas[54];
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 10; j++) {
-            carta->color = i;
-            carta->num = j;
-            if (carta->num == 0) {
-                carta->cont = 1;
-            }
-            else {
-                carta->cont = 2;
-            }
-            carta->especial = -1;
-            arregloCartas[posArr] = carta;
-            posArr++;
-        }
-    }
-    for (i = 0; i < 4; i++) {
-        for (j = 2; j < 5; j++) {
-            carta->num = NULL;
-            carta->color = i;
-            carta->especial = j;
-            carta->cont = 2;
-            arregloCartas[posArr] = carta;
-            posArr++;
-        }
-    }
-    for (i = 0; i < 2; i++) {
-        carta->num = NULL;
-        carta->color = NULL;
-        carta->especial = i;
-        carta->cont = 4;
-        arregloCartas[posArr] = carta;
-        posArr++;
-    }
+    //posArr = 0;
+    //Carta* arregloCartas[54];
+    //for (i = 0; i < 4; i++) {
+    //    for (j = 0; j < 10; j++) {
+    //        carta->color = i;
+    //        carta->num = j;
+    //        if (carta->num == 0) {
+    //            carta->cont = 1;
+    //        }
+    //        else {
+    //            carta->cont = 2;
+    //        }
+    //        carta->especial = -1;
+    //        arregloCartas[posArr] = carta;
+    //        posArr++;
+    //    }
+    //}
+    //for (i = 0; i < 4; i++) {
+    //    for (j = 2; j < 5; j++) {
+    //        carta->num = NULL;
+    //        carta->color = i;
+    //        carta->especial = j;
+    //        carta->cont = 2;
+    //        arregloCartas[posArr] = carta;
+    //        posArr++;
+    //    }
+    //}
+    //for (i = 0; i < 2; i++) {
+    //    carta->num = NULL;
+    //    carta->color = NULL;
+    //    carta->especial = i;
+    //    carta->cont = 4;
+    //    arregloCartas[posArr] = carta;
+    //    posArr++;
+    //}
 
-    while (i <= 108) {                                    // se crea el mazo
-        j = rand() % 54;
-        if (arregloCartas[j]->cont != 0) {
-            arregloCartas[j]->cont--;
-            pushBack(estado->mazo, arregloCartas[j]);
-        }
-        i = countList(estado->mazo);
-    }
+    //while (i <= 108) {                                    // se crea el mazo
+    //    printf("%i\n", i);
+    //    j = rand() % 54;
+    //    if (arregloCartas[j]->cont != 0) {
+    //        arregloCartas[j]->cont--;
+    //        pushBack(estado->mazo, arregloCartas[j]);
+    //    }
+    //    i = countList(estado->mazo);
+    //}
 
     //generarMazo(arregloCartas,estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona)
 
-    j = countList(estado->jugadores);
-    jugador = firstList(estado->jugadores);
-    for (i = 0; i < j; i++) {                              //darle a cada jugador sus 7 cartas iniciales
-        while (countList(jugador->listaCartas) < 7) {
-            sacarCarta(estado->mazo, jugador->listaCartas);
-        }
-        jugador = nextlist(estado->jugadores);
-    }
+    //jugador = firstList(estado->jugadores);
+    //while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
+    //    while (countList(jugador->listaCartas) < 7) {
+    //        sacarCarta(estado->mazo, jugador->listaCartas);
+    //    }
+    //    jugador = nextList(estado->jugadores);
+    //}
+    
+    
+    pushBack(jugador->listaCartas, crearCarta(0, 1, -1));
+    pushBack(jugador->listaCartas, crearCarta(1, 1, -1));
 
     List* botones = createList();
-    // pushBack(botones, crearBoton(al_load_bitmap("button.png"), 350, 200, 500, 300, 1));
+    pushBack(botones, crearBoton(al_load_bitmap("backside.png"), 94, 141, (1280 / 2) + 100, 720/2, 1));
+    // dibujarCarta(bitCartas, *cartaJugada, (1280 / 2) - 200, 720 / 2);
 
     while (1)
     {
@@ -366,7 +371,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         case ALLEGRO_EVENT_MOUSE_AXES:
             mx = event.mouse.x;
             my = event.mouse.y;
-            // printf("x = %i, y = %i\n", mx, my);
+            //printf("x = %i, y = %i\n", mx, my);
             break;
         case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
             click = 1;
@@ -386,8 +391,18 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
                     jugarCarta(estado, jugador, cartaMouse);
                     terminarTurno(estado);
                 }
+
                 botonMouse = encontrarBoton(botones, mx, my);
-                if (botonMouse != -1) printf("%i", botonMouse);
+                if (botonMouse != -1)
+                {
+                    switch (botonMouse)
+                    {
+                    case 1:
+                        printf("sacar carta\n");
+                        //sacarCarta();
+                        break;
+                    }
+                }
             }
             else
             {
