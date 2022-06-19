@@ -89,6 +89,18 @@ void dibujarBotones(List* botones)
     }
 }
 
+void generarMazo(Carta* arregloCartas[], List* mazo) {
+    int i,j = 0;
+    while (i <= 108) {                               
+        j = rand() % 54;
+        if (arregloCartas[j]->cont != 0) {
+            arregloCartas[j]->cont--;
+            pushBack(mazo, arregloCartas[j]);
+        }
+        i = countList(mazo);
+    }
+}
+
 Carta* crearCarta(int color, int num, int especial)
 {
     Carta* carta = (Carta*)malloc(sizeof(Carta));
@@ -276,7 +288,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
 
-    Carta* carta = (Carta*)malloc(sizeof(Carta));
+    Carta* carta = (Carta*)malloc(sizeof(Carta));         //crear arreglo con todas las cartas
     posArr = 0;
     Carta* arregloCartas[54];
     for (i = 0; i < 4; i++) {
@@ -313,8 +325,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         posArr++;
     }
 
-    estado->mazo = createList();
-    while (i <= 108) {
+    while (i <= 108) {                                    // se crea el mazo
         j = rand() % 54;
         if (arregloCartas[j]->cont != 0) {
             arregloCartas[j]->cont--;
@@ -322,6 +333,8 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         }
         i = countList(estado->mazo);
     }
+
+    //generarMazo(arregloCartas,estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona)
 
     j = countList(estado->jugadores);
     jugador = firstList(estado->jugadores);
