@@ -175,6 +175,79 @@ void terminarTurno(Estado* estado)
     estado->pausa = 1;
 }
 
+bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
+    List* botones = createList();
+    int mx = 0, my = 0, click = 0, botonMouse;
+    bool redraw = true;
+    bool done = false;
+    ALLEGRO_EVENT event;
+    ALLEGRO_BITMAP* fondo = al_load_bitmap("button.png");
+    //botones = crearBoton();
+
+    if (botonMouse == 1)numPlayers++;
+    else if (botonMouse == 2)numPlayer--;
+    else if (botonMouse == 3)dif++;
+    else if (botonMouse == 4)dif--;
+
+    while (1)
+    {
+        // break; // eliminar cuando el menú esté listo
+
+        int botonMouse = -1;
+        int click = 0;
+
+        al_wait_for_event(queue, &event);
+
+        switch (event.type)
+        {
+        case ALLEGRO_EVENT_TIMER:
+            redraw = true;
+            break;
+
+        case ALLEGRO_EVENT_DISPLAY_CLOSE:
+            done = true;
+            break;
+        case ALLEGRO_EVENT_MOUSE_AXES:
+            mx = event.mouse.x;
+            my = event.mouse.y;
+            printf("x = %i, y = %i\n", mx, my);
+            break;
+        case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+            click = 1;
+            break;
+        }
+
+        if (done) break;
+
+        if (click && al_is_event_queue_empty(queue))
+        {
+            botonMouse = encontrarBoton(botones, mx, my);
+
+            if (botonMouse == 1)numPlayers++;
+            else if (botonMouse == 2)numPlayer--;
+            else if (botonMouse == 3)dif++;
+            else if (botonMouse == 4)dif--;
+            // código que maneja los casos usando el id de los botones
+        }
+
+        if (redraw && al_is_event_queue_empty(queue))
+        {
+            al_clear_to_color(al_map_rgb(255, 255, 255));
+
+            al_draw_bitmap(fondo, 0, 0, 0);
+
+            //al_draw_text(al_create_builtin_font(), al_map_rgb(255, 255, 255), 0, 0, 0, "AAAAAAAAAAAA");
+
+            dibujarBotones(botones);
+
+            al_flip_display();
+
+            redraw = false;
+        }
+    }
+    return true;
+}
+
 int main()
 {
     al_init();
