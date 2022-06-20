@@ -16,7 +16,7 @@ typedef struct {
 
 typedef struct {
     int color;     // 0 = rojo, 1 = amarillo, 2 = celeste, 3 = verde
-    int num;       // 0 al 9
+    int num;       // 1 al 9
     int especial;  // -1 = normal, 0 = cambia color, 1 = +4, 2 = saltar turno, 3 = +2, 4 = cambiar orden
     int cont;
 }Carta;
@@ -92,8 +92,8 @@ void dibujarBotones(List* botones)
 void generarMazo(Carta* arregloCartas[], List* mazo) {
     int i = 0;
     int j = 0;
-    while (i <= 108) {                               
-        j = rand() % 54;
+    while (i <= 104) {                               
+        j = rand() % 50;
         if (arregloCartas[j]->cont != 0) {
             arregloCartas[j]->cont--;
             pushBack(mazo, arregloCartas[j]);
@@ -286,62 +286,80 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
 
-    Carta* carta = (Carta*)malloc(sizeof(Carta));         //crear arreglo con todas las cartas
-    //posArr = 0;
-    //Carta* arregloCartas[54];
-    //for (i = 0; i < 4; i++) {
-    //    for (j = 0; j < 10; j++) {
-    //        carta->color = i;
-    //        carta->num = j;
-    //        if (carta->num == 0) {
-    //            carta->cont = 1;
-    //        }
-    //        else {
-    //            carta->cont = 2;
-    //        }
-    //        carta->especial = -1;
-    //        arregloCartas[posArr] = carta;
-    //        posArr++;
-    //    }
-    //}
-    //for (i = 0; i < 4; i++) {
-    //    for (j = 2; j < 5; j++) {
-    //        carta->num = NULL;
-    //        carta->color = i;
-    //        carta->especial = j;
-    //        carta->cont = 2;
-    //        arregloCartas[posArr] = carta;
-    //        posArr++;
-    //    }
-    //}
-    //for (i = 0; i < 2; i++) {
-    //    carta->num = NULL;
-    //    carta->color = NULL;
-    //    carta->especial = i;
-    //    carta->cont = 4;
-    //    arregloCartas[posArr] = carta;
-    //    posArr++;
-    //}
+    Carta* carta;        //crear arreglo con todas las cartas
+    posArr = 0;
+    Carta* arregloCartas[50];
+    for (i = 0; i < 4; i++) {
+        for (j = 1; j < 10; j++) {
+            carta = (Carta*)malloc(sizeof(Carta));
+            carta->color = i;
+            carta->num = j;
+            if (carta->num == 0) {
+                carta->cont = 1;
+            }
+            else {
+                carta->cont = 2;
+            }
+            carta->especial = -1;
+            arregloCartas[posArr] = carta;
+            posArr++;
+            //printf(" %d %d %d %d \n", carta->num, carta->color, carta->especial,carta->cont);
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        for (j = 2; j < 5; j++) {
+            carta = (Carta*)malloc(sizeof(Carta));
+            carta->num = NULL;
+            carta->color = i;
+            carta->especial = j;
+            carta->cont = 2;
+            arregloCartas[posArr] = carta;
+            posArr++;
+            //printf(" %d %d %d %d \n", carta->num, carta->color, carta->especial,carta->cont);
+        }
+    }
+    for (i = 0; i < 2; i++) {
+        carta = (Carta*)malloc(sizeof(Carta));
+        carta->num = NULL;
+        carta->color = NULL;
+        carta->especial = i;
+        carta->cont = 4;
+        arregloCartas[posArr] = carta;
+        posArr++;
+        //printf(" %d %d %d %d\n", carta->num, carta->color, carta->especial,carta->cont);
+    }
 
-    //while (i <= 108) {                                    // se crea el mazo
-    //    printf("%i\n", i);
-    //    j = rand() % 54;
-    //    if (arregloCartas[j]->cont != 0) {
-    //        arregloCartas[j]->cont--;
-    //        pushBack(estado->mazo, arregloCartas[j]);
-    //    }
-    //    i = countList(estado->mazo);
-    //}
+    free(carta);                                       //no quitar esto o el codigo se suicida
 
-    //generarMazo(arregloCartas,estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona)
+    /*while (i <= 104) {                                    // se crea el mazo
+        printf("%i\n", i);
+        j = rand() % 50;
+        if (arregloCartas[j]->cont != 0) {
+            arregloCartas[j]->cont--;
+            pushBack(estado->mazo, arregloCartas[j]);
+        }
+        i = countList(estado->mazo);
+    }*/
 
-    //jugador = firstList(estado->jugadores);
-    //while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
-    //    while (countList(jugador->listaCartas) < 7) {
-    //        sacarCarta(estado->mazo, jugador->listaCartas);
-    //    }
-    //    jugador = nextList(estado->jugadores);
-    //}
+    generarMazo(arregloCartas,estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona) .si funciona.
+
+    int n = 103;
+
+    carta = firstList(estado->mazo);
+
+    while (n) {
+        printf("\n%d %d %d %d\n", carta->num, carta->color, carta->especial, carta->cont);
+        carta = nextList(estado->mazo);
+        n--;
+    }
+
+    /*jugador = firstList(estado->jugadores);
+    while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
+        while (countList(jugador->listaCartas) < 7) {
+            sacarCarta(estado->mazo, jugador->listaCartas);
+        }
+        jugador = nextList(estado->jugadores);
+    }*/
     
     
     pushBack(jugador->listaCartas, crearCarta(0, 1, -1));
