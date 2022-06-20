@@ -181,13 +181,9 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
-    ALLEGRO_BITMAP* fondo = al_load_bitmap("button.png");
-    //botones = crearBoton();
-
-    if (botonMouse == 1)numPlayers++;
-    else if (botonMouse == 2)numPlayer--;
-    else if (botonMouse == 3)dif++;
-    else if (botonMouse == 4)dif--;
+    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("button.png");
+    Boton *boton = crearBoton(botonPrueba, 350, 200, 120, 120);
+    PushFront(botones, boton);
 
     while (1)
     {
