@@ -181,8 +181,8 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
-    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("button.png");
-    Boton *boton = crearBoton(botonPrueba, 350, 200, 120, 120);
+    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("config.png");
+    Boton *boton = crearBoton(botonPrueba, 513, 190, 120, 120, 0);
     PushFront(botones, boton);
 
     while (1)
@@ -219,10 +219,10 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         {
             botonMouse = encontrarBoton(botones, mx, my);
 
-            if (botonMouse == 1)numPlayers++;
-            else if (botonMouse == 2)numPlayer--;
-            else if (botonMouse == 3)dif++;
-            else if (botonMouse == 4)dif--;
+            if (botonMouse == 0)numPlayers++;
+            else if (botonMouse == 1)numPlayer--;
+            else if (botonMouse == 2)dif++;
+            else if (botonMouse == 3)dif--;
             // código que maneja los casos usando el id de los botones
         }
 
