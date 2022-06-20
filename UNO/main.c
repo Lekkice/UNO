@@ -177,12 +177,34 @@ void terminarTurno(Estado* estado)
 
 bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     List* botones = createList();
-    int mx = 0, my = 0, click = 0, botonMouse;
+    int mx = 0, my = 0, click = 0, botonMouse, numPlayers, dif;
     bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
-    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("config.png");
-    Boton *boton = crearBoton(botonPrueba, 513, 190, 120, 120, 0);
+    ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
+
+    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("Next.png");
+    Boton *boton = crearBoton(botonPrueba, 513, 181, 120, 120, 0);
+    PushFront(botones, boton);
+
+    botonPrueba = al_load_bitmap("Exit.png");
+    Boton *boton = crearBoton(botonPrueba, 522, 183, 120, 120, 1);
+    PushFront(botones, boton);
+
+    botonPrueba = al_load_bitmap("Next.png");
+    Boton *boton = crearBoton(botonPrueba, 513, 181, 120, 180, 2);
+    PushFront(botones, boton);
+
+    botonPrueba = al_load_bitmap("Exit.png");
+    Boton *boton = crearBoton(botonPrueba, 522, 183, 120, 180, 3);
+    PushFront(botones, boton);
+
+    botonPrueba = al_load_bitmap("play.png");
+    Boton *boton = crearBoton(botonPrueba, 510, 372, 100, 250, 4);
+    PushFront(botones, boton);
+
+    botonPrueba = al_load_bitmap("close.png");
+    Boton *boton = crearBoton(botonPrueba, 517, 240, 200, 250, 5);
     PushFront(botones, boton);
 
     while (1)
@@ -219,10 +241,22 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         {
             botonMouse = encontrarBoton(botones, mx, my);
 
-            if (botonMouse == 0)numPlayers++;
-            else if (botonMouse == 1)numPlayer--;
-            else if (botonMouse == 2)dif++;
-            else if (botonMouse == 3)dif--;
+            switch (botonMouse) {
+            case 0:
+                numPlayers++;
+            case 1:
+                numPlayer--;
+            case 2:
+                dif++;
+            case 3:
+                dif--;
+            case 4:
+                printf("se dio a play");
+                //break;
+            case 5:
+                printf("se dio a salir");
+                //return false;
+            }
             // código que maneja los casos usando el id de los botones
         }
 
@@ -240,6 +274,8 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
             redraw = false;
         }
+
+        printf("%i , %i", numPlayers, dif)
     }
     return true;
 }
