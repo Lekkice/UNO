@@ -92,7 +92,7 @@ void dibujarBotones(List* botones)
 void generarMazo(Carta* arregloCartas[], List* mazo) {
     int i = 0;
     int j = 0;
-    while (i <= 104) {                               
+    while (i < 104) {                               
         j = rand() % 50;
         if (arregloCartas[j]->cont != 0) {
             arregloCartas[j]->cont--;
@@ -185,27 +185,27 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
     ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("Next.png");
     Boton *boton = crearBoton(botonPrueba, 513, 181, 120, 120, 0);
-    PushFront(botones, boton);
+    pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Exit.png");
-    Boton *boton = crearBoton(botonPrueba, 522, 183, 120, 120, 1);
-    PushFront(botones, boton);
+    boton = crearBoton(botonPrueba, 522, 183, 120, 120, 1);
+    pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Next.png");
-    Boton *boton = crearBoton(botonPrueba, 513, 181, 120, 180, 2);
-    PushFront(botones, boton);
+    boton = crearBoton(botonPrueba, 513, 181, 120, 180, 2);
+    pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Exit.png");
-    Boton *boton = crearBoton(botonPrueba, 522, 183, 120, 180, 3);
-    PushFront(botones, boton);
+    boton = crearBoton(botonPrueba, 522, 183, 120, 180, 3);
+    pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("play.png");
-    Boton *boton = crearBoton(botonPrueba, 510, 372, 100, 250, 4);
-    PushFront(botones, boton);
+    boton = crearBoton(botonPrueba, 510, 372, 100, 250, 4);
+    pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("close.png");
-    Boton *boton = crearBoton(botonPrueba, 517, 240, 200, 250, 5);
-    PushFront(botones, boton);
+    boton = crearBoton(botonPrueba, 517, 240, 200, 250, 5);
+    pushFront(botones, boton);
 
     while (1)
     {
@@ -243,9 +243,9 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
             switch (botonMouse) {
             case 0:
-                numPlayers++;
+                //numPlayers++;
             case 1:
-                numPlayer--;
+                //numPlayer--;
             case 2:
                 dif++;
             case 3:
@@ -275,7 +275,7 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
             redraw = false;
         }
 
-        printf("%i , %i", numPlayers, dif)
+        //printf("%i , %i", numPlayers, dif);
     }
     return true;
 }
@@ -434,29 +434,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         //printf(" %d %d %d %d\n", carta->num, carta->color, carta->especial,carta->cont);
     }
 
-    free(carta);                                       //no quitar esto o el codigo se suicida
-
-    /*while (i <= 104) {                                    // se crea el mazo
-        printf("%i\n", i);
-        j = rand() % 50;
-        if (arregloCartas[j]->cont != 0) {
-            arregloCartas[j]->cont--;
-            pushBack(estado->mazo, arregloCartas[j]);
-        }
-        i = countList(estado->mazo);
-    }*/
-
     generarMazo(arregloCartas,estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona) .si funciona.
-
-    int n = 103;
-
-    carta = firstList(estado->mazo);
-
-    while (n) {
-        printf("\n%d %d %d %d\n", carta->num, carta->color, carta->especial, carta->cont);
-        carta = nextList(estado->mazo);
-        n--;
-    }
 
     /*jugador = firstList(estado->jugadores);
     while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
