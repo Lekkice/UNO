@@ -118,11 +118,43 @@ void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta carta, int x, int y)
 {
     int anchoCarta = 94;
     int largoCarta = 141;
-
-    if (carta.especial == -1)
+    switch (carta.especial)
     {
+    case -1:
         al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * (carta.num - 1), 1 + largoCarta * carta.color, anchoCarta, largoCarta,
             x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        break;
+
+    case 0:
+        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 9, 1 + largoCarta * 0, anchoCarta, largoCarta,
+            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        break;
+
+    case 1:
+        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 9, 1 + largoCarta * 2, anchoCarta, largoCarta,
+            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        break;
+
+    case 2:
+        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
+            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        break;
+
+    case 3:
+        al_draw_bitmap_region(bitCartas, 0.2 + (anchoCarta * 4) + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
+            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        break;
+
+    case 4:
+        if (carta.color <= 1) {
+            al_draw_bitmap_region(bitCartas, 0.2 + (anchoCarta * 7) + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
+                x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        }
+        else {
+            al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * (carta.color - 2), 1 + largoCarta * 5, anchoCarta, largoCarta,
+                x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        }
+        break;
     }
 }
 
@@ -381,7 +413,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     jugador = (Jugador*)malloc(sizeof(Jugador));
     jugador->listaCartas = createList();
 
-    Estado* estado = malloc((Estado*)sizeof(Estado));
+    Estado* estado = (Estado*)malloc(sizeof(Estado));
     estado->jugadores = createList();
     estado->cartasJugadas = createList();
     estado->turnoJugador = 0;
@@ -444,9 +476,12 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         jugador = nextList(estado->jugadores);
     }*/
     
+    while (countList(jugador->listaCartas) < 7) {
+        sacarCarta(estado->mazo, jugador->listaCartas);
+    }
     
-    pushBack(jugador->listaCartas, crearCarta(0, 1, -1));
-    pushBack(jugador->listaCartas, crearCarta(1, 1, -1));
+    //pushBack(jugador->listaCartas, crearCarta(0, 1, -1));
+    //pushBack(jugador->listaCartas, crearCarta(1, 1, -1));
 
     List* botones = createList();
     pushBack(botones, crearBoton(al_load_bitmap("backside.png"), 94, 141, (1280 / 2) + 100, 720/2, 1));
@@ -500,7 +535,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
                     {
                     case 1:
                         printf("sacar carta\n");
-                        //sacarCarta();
+                        sacarCarta(estado->mazo, jugador->listaCartas);
                         break;
                     }
                 }
