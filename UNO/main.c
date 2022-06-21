@@ -94,7 +94,7 @@ void generarMazo(Carta* arregloCartas[], List* mazo) {
     int i = 0;
     int j = 0;
     srand(time(0));
-    while (i < 104) {                               
+    while (i < 104) {
         j = rand() % 50;
         if (arregloCartas[j]->cont != 0) {
             arregloCartas[j]->cont--;
@@ -219,10 +219,10 @@ void terminarTurno(Estado* estado)
     estado->pausa = 1;
 }
 
-bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
+void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     List* botones = createList();
     int mx = 0, my = 0, click = 0, botonMouse, numPlayers, dif;
-    bool redraw = true;
+    bool redraw;
     bool done = false;
     ALLEGRO_EVENT event;
     ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
@@ -295,13 +295,12 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
             case 3:
                 dif--;
             case 4:
-                printf("se dio a play");
-                //break;
+                printf("se dio a play\n");
+                break;
             case 5:
-                printf("se dio a salir");
-                //return false;
+                printf("se dio a salir\n");
+                return false;
             }
-            // código que maneja los casos usando el id de los botones
         }
 
         if (redraw && al_is_event_queue_empty(queue))
@@ -309,8 +308,6 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
             al_clear_to_color(al_map_rgb(255, 255, 255));
 
             al_draw_bitmap(fondo, 0, 0, 0);
-
-            //al_draw_text(al_create_builtin_font(), al_map_rgb(255, 255, 255), 0, 0, 0, "AAAAAAAAAAAA");
 
             dibujarBotones(botones);
 
@@ -349,7 +346,7 @@ int main()
 
     List* botones = createList(); // lista con botones del menú principal
 
-
+    menuCrearPartida(timer, queue);
 
     menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
 
