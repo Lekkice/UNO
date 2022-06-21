@@ -342,6 +342,7 @@ int main()
 
     bool redraw = true;
     bool done = false;
+    bool flag;
     ALLEGRO_EVENT event;
 
     al_start_timer(timer);
@@ -349,9 +350,11 @@ int main()
 
     List* botones = createList(); // lista con botones del menú principal
 
+    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("button.png");
+    Boton* boton = crearBoton(botonPrueba, 513, 181, 120, 120, 0);
+    pushFront(botones, boton);
 
-
-    menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
+    //menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
 
     int botonMouse, click, mx, my;
     while (1)
@@ -387,6 +390,8 @@ int main()
         if (click && al_is_event_queue_empty(queue))
         {
             botonMouse = encontrarBoton(botones, mx, my);
+
+            if(botonMouse == 0)flag = menuCrearPartida(timer, queue);
             // código que maneja los casos usando el id de los botones
         }
 
@@ -402,6 +407,8 @@ int main()
 
             redraw = false;
         }
+
+        if(flag)menuEmpezarJuego(timer, queue);
 
     }
 
