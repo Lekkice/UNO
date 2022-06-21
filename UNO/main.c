@@ -92,7 +92,7 @@ void dibujarBotones(List* botones)
 void generarMazo(Carta* arregloCartas[], List* mazo) {
     int i = 0;
     int j = 0;
-    while (i < 104) {                               
+    while (i < 104) {
         j = rand() % 50;
         if (arregloCartas[j]->cont != 0) {
             arregloCartas[j]->cont--;
