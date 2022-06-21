@@ -224,6 +224,7 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     int mx = 0, my = 0, click = 0, botonMouse, numPlayers, dif;
     bool redraw;
     bool done = false;
+    bool flag;
     ALLEGRO_EVENT event;
     ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
 
@@ -298,8 +299,9 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
                 printf("se dio a play\n");
                 break;
             case 5:
-                printf("se dio a salir\n");
-                return false;
+                printf("se dio a salir");
+                flag = false;
+                break;
             }
         }
 
@@ -318,7 +320,8 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
         //printf("%i , %i", numPlayers, dif);
     }
-    return true;
+    
+    if (flag)menuEmpezarJuego(timer, queue);
 }
 
 int main()
@@ -339,6 +342,7 @@ int main()
 
     bool redraw = true;
     bool done = false;
+    bool flag;
     ALLEGRO_EVENT event;
 
     al_start_timer(timer);
@@ -346,9 +350,11 @@ int main()
 
     List* botones = createList(); // lista con botones del menú principal
 
-    menuCrearPartida(timer, queue);
+    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("button.png");
+    Boton* boton = crearBoton(botonPrueba, 513, 181, 500, 500, 0);
+    pushFront(botones, boton);
 
-    menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
+    //menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
 
     int botonMouse, click, mx, my;
     while (1)
@@ -384,7 +390,9 @@ int main()
         if (click && al_is_event_queue_empty(queue))
         {
             botonMouse = encontrarBoton(botones, mx, my);
-            // código que maneja los casos usando el id de los botones
+
+            if(botonMouse == 0)flag = menuCrearPartida(timer, queue);
+            //código que maneja los casos usando el id de los botones
         }
 
         if (redraw && al_is_event_queue_empty(queue))
