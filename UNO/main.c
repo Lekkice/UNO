@@ -222,7 +222,7 @@ void terminarTurno(Estado* estado)
 void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     List* botones = createList();
     int mx = 0, my = 0, click = 0, botonMouse, numPlayers, dif;
-    bool redraw;
+    bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
     ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
