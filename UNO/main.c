@@ -6,6 +6,7 @@
 #include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct {
     ALLEGRO_BITMAP* imagen;
@@ -92,7 +93,8 @@ void dibujarBotones(List* botones)
 void generarMazo(Carta* arregloCartas[], List* mazo) {
     int i = 0;
     int j = 0;
-    while (i < 104) {
+    srand(time(0));
+    while (i < 104) {                               
         j = rand() % 50;
         if (arregloCartas[j]->cont != 0) {
             arregloCartas[j]->cont--;
@@ -182,6 +184,16 @@ int encontrarCarta(int mx, int my)
     }
     return -1;
 }
+
+/*bool sePuedeJugar(Estado* estado, Jugador* jugador, int cartaMouse) {
+    List* lista = jugador->listaCartas;
+    Carta* carta = firstList(lista);
+
+    for (int i = 0; i < cartaMouse - 1; i++) {
+        carta = nextList(lista);
+    }
+
+}*/
 
 void jugarCarta(Estado* estado, Jugador* jugador, int cartaMouse)
 {
