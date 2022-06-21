@@ -219,11 +219,12 @@ void terminarTurno(Estado* estado)
     estado->pausa = 1;
 }
 
-bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
+void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     List* botones = createList();
     int mx = 0, my = 0, click = 0, botonMouse, numPlayers, dif;
     bool redraw = true;
     bool done = false;
+    bool flag;
     ALLEGRO_EVENT event;
     ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
 
@@ -296,10 +297,12 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
                 dif--;
             case 4:
                 printf("se dio a play");
-                //break;
+                flag = true;
+                break;
             case 5:
                 printf("se dio a salir");
-                //return false;
+                flag = false;
+                break;
             }
             // código que maneja los casos usando el id de los botones
         }
@@ -321,7 +324,8 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
         //printf("%i , %i", numPlayers, dif);
     }
-    return true;
+    
+    if (flag)menuEmpezarJuego(timer, queue);
 }
 
 int main()
@@ -351,7 +355,7 @@ int main()
     List* botones = createList(); // lista con botones del menú principal
 
     ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("button.png");
-    Boton* boton = crearBoton(botonPrueba, 513, 181, 120, 120, 0);
+    Boton* boton = crearBoton(botonPrueba, 513, 181, 500, 500, 0);
     pushFront(botones, boton);
 
     //menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
@@ -392,7 +396,7 @@ int main()
             botonMouse = encontrarBoton(botones, mx, my);
 
             if(botonMouse == 0)flag = menuCrearPartida(timer, queue);
-            // código que maneja los casos usando el id de los botones
+            //código que maneja los casos usando el id de los botones
         }
 
         if (redraw && al_is_event_queue_empty(queue))
@@ -407,8 +411,6 @@ int main()
 
             redraw = false;
         }
-
-        if(flag)menuEmpezarJuego(timer, queue);
 
     }
 
