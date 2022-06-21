@@ -186,11 +186,7 @@ int encontrarCarta(int mx, int my)
 }
 
 bool sePuedeJugar(Estado* estado, Carta *carta) {
-    Carta* cartaJugada = lastList(estado->cartasJugadas);
-
-    /*for (int i = 0; i < cartaMouse - 1; i++) {
-        carta = nextList(lista);
-    }*/
+    Carta* cartaJugada = firstList(estado->cartasJugadas);
 
     if ((carta->especial == 0) || (carta->especial == 1))return true;
 
