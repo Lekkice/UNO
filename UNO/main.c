@@ -354,6 +354,8 @@ int main()
     Boton* boton = crearBoton(botonPrueba, 513, 181, 500, 500, 0);
     pushFront(botones, boton);
 
+    menuCrearPartida(timer, queue);
+
     //menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
 
     int botonMouse, click, mx, my;
@@ -391,7 +393,7 @@ int main()
         {
             botonMouse = encontrarBoton(botones, mx, my);
 
-            if(botonMouse == 0)flag = menuCrearPartida(timer, queue);
+            if(botonMouse == 0) menuCrearPartida(timer, queue);
             //código que maneja los casos usando el id de los botones
         }
 
