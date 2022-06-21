@@ -6,6 +6,7 @@
 #include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct {
     ALLEGRO_BITMAP* imagen;
@@ -92,7 +93,8 @@ void dibujarBotones(List* botones)
 void generarMazo(Carta* arregloCartas[], List* mazo) {
     int i = 0;
     int j = 0;
-    while (i <= 104) {                               
+    srand(time(0));
+    while (i < 104) {                               
         j = rand() % 50;
         if (arregloCartas[j]->cont != 0) {
             arregloCartas[j]->cont--;
@@ -118,11 +120,43 @@ void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta carta, int x, int y)
 {
     int anchoCarta = 94;
     int largoCarta = 141;
-
-    if (carta.especial == -1)
+    switch (carta.especial)
     {
+    case -1:
         al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * (carta.num - 1), 1 + largoCarta * carta.color, anchoCarta, largoCarta,
             x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        break;
+
+    case 0:
+        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 9, 1 + largoCarta * 0, anchoCarta, largoCarta,
+            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        break;
+
+    case 1:
+        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 9, 1 + largoCarta * 2, anchoCarta, largoCarta,
+            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        break;
+
+    case 2:
+        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
+            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        break;
+
+    case 3:
+        al_draw_bitmap_region(bitCartas, 0.2 + (anchoCarta * 4) + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
+            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        break;
+
+    case 4:
+        if (carta.color <= 1) {
+            al_draw_bitmap_region(bitCartas, 0.2 + (anchoCarta * 7) + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
+                x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        }
+        else {
+            al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * (carta.color - 2), 1 + largoCarta * 5, anchoCarta, largoCarta,
+                x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        }
+        break;
     }
 }
 
@@ -150,6 +184,16 @@ int encontrarCarta(int mx, int my)
     }
     return -1;
 }
+
+/*bool sePuedeJugar(Estado* estado, Jugador* jugador, int cartaMouse) {
+    List* lista = jugador->listaCartas;
+    Carta* carta = firstList(lista);
+
+    for (int i = 0; i < cartaMouse - 1; i++) {
+        carta = nextList(lista);
+    }
+
+}*/
 
 void jugarCarta(Estado* estado, Jugador* jugador, int cartaMouse)
 {
@@ -188,24 +232,24 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Exit.png");
-    Boton *boton = crearBoton(botonPrueba, 522, 183, 120, 120, 1);
+    boton = crearBoton(botonPrueba, 522, 183, 120, 120, 1);
     pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Next.png");
     Boton *boton = crearBoton(botonPrueba, 513, 181, 120, 180, 2);
-    pushFront(botones, boton);
+    PushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Exit.png");
     Boton *boton = crearBoton(botonPrueba, 522, 183, 120, 180, 3);
-    pushFront(botones, boton);
+    PushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("play.png");
     Boton *boton = crearBoton(botonPrueba, 510, 372, 100, 250, 4);
-    pushFront(botones, boton);
+    PushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("close.png");
     Boton *boton = crearBoton(botonPrueba, 517, 240, 200, 250, 5);
-    pushFront(botones, boton);
+    PushFront(botones, boton);
 
     while (1)
     {
@@ -243,9 +287,9 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
             switch (botonMouse) {
             case 0:
-                numPlayers++;
+                //numPlayers++;
             case 1:
-                numPlayer--;
+                //numPlayer--;
             case 2:
                 dif++;
             case 3:
@@ -275,7 +319,7 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
             redraw = false;
         }
 
-        printf("%i , %i", numPlayers, dif)
+        //printf("%i , %i", numPlayers, dif);
     }
     return true;
 }
@@ -383,7 +427,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     jugador = (Jugador*)malloc(sizeof(Jugador));
     jugador->listaCartas = createList();
 
-    Estado* estado = malloc((Estado*)sizeof(Estado));
+    Estado* estado = (Estado*)malloc(sizeof(Estado));
     estado->jugadores = createList();
     estado->cartasJugadas = createList();
     estado->turnoJugador = 0;
@@ -436,29 +480,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         //printf(" %d %d %d %d\n", carta->num, carta->color, carta->especial,carta->cont);
     }
 
-    free(carta);                                       //no quitar esto o el codigo se suicida
-
-    /*while (i <= 104) {                                    // se crea el mazo
-        printf("%i\n", i);
-        j = rand() % 50;
-        if (arregloCartas[j]->cont != 0) {
-            arregloCartas[j]->cont--;
-            pushBack(estado->mazo, arregloCartas[j]);
-        }
-        i = countList(estado->mazo);
-    }*/
-
     generarMazo(arregloCartas,estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona) .si funciona.
-
-    int n = 103;
-
-    carta = firstList(estado->mazo);
-
-    while (n) {
-        printf("\n%d %d %d %d\n", carta->num, carta->color, carta->especial, carta->cont);
-        carta = nextList(estado->mazo);
-        n--;
-    }
 
     /*jugador = firstList(estado->jugadores);
     while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
@@ -468,9 +490,12 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         jugador = nextList(estado->jugadores);
     }*/
     
+    while (countList(jugador->listaCartas) < 7) {
+        sacarCarta(estado->mazo, jugador->listaCartas);
+    }
     
-    pushBack(jugador->listaCartas, crearCarta(0, 1, -1));
-    pushBack(jugador->listaCartas, crearCarta(1, 1, -1));
+    //pushBack(jugador->listaCartas, crearCarta(0, 1, -1));
+    //pushBack(jugador->listaCartas, crearCarta(1, 1, -1));
 
     List* botones = createList();
     pushBack(botones, crearBoton(al_load_bitmap("backside.png"), 94, 141, (1280 / 2) + 100, 720/2, 1));
@@ -524,7 +549,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
                     {
                     case 1:
                         printf("sacar carta\n");
-                        //sacarCarta();
+                        sacarCarta(estado->mazo, jugador->listaCartas);
                         break;
                     }
                 }
