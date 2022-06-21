@@ -221,34 +221,34 @@ void terminarTurno(Estado* estado)
 
 void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     List* botones = createList();
-    int mx = 0, my = 0, click = 0, botonMouse, numPlayers, dif;
+    int mx = 0, my = 0, click = 0, botonMouse, numPlayers = 0, dif = 0;
     bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
     ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
 
     ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("Next.png");
-    Boton *boton = crearBoton(botonPrueba, 513, 181, 120, 120, 0);
+    Boton *boton = crearBoton(botonPrueba, 513, 181, 400, 120, 0);
     pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Exit.png");
-    boton = crearBoton(botonPrueba, 522, 183, 120, 120, 1);
+    boton = crearBoton(botonPrueba, 522, 183, 800, 120, 1);
     pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Next.png");
-    boton = crearBoton(botonPrueba, 513, 181, 120, 180, 2);
+    boton = crearBoton(botonPrueba, 513, 181, 400, 350, 2);
     pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Exit.png");
-    boton = crearBoton(botonPrueba, 522, 183, 120, 180, 3);
+    boton = crearBoton(botonPrueba, 522, 183, 800, 350, 3);
     pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("play.png");
-    boton = crearBoton(botonPrueba, 510, 372, 100, 250, 4);
+    boton = crearBoton(botonPrueba, 510, 372, 100, 600, 4);
     pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("close.png");
-    boton = crearBoton(botonPrueba, 517, 240, 200, 250, 5);
+    boton = crearBoton(botonPrueba, 517, 240, 1000, 600, 5);
     pushFront(botones, boton);
 
     while (1)
@@ -287,13 +287,21 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
             switch (botonMouse) {
             case 0:
-                //numPlayers++;
+                numPlayers++;
+                printf("%i , %i", numPlayers, dif);
+                break;
             case 1:
-                //numPlayer--;
+                numPlayers--;
+                printf("%i , %i", numPlayers, dif);
+                break;
             case 2:
                 dif++;
+                printf("%i , %i", numPlayers, dif);
+                break;
             case 3:
                 dif--;
+                printf("%i , %i", numPlayers, dif);
+                break;
             case 4:
                 printf("se dio a play\n");
                 menuEmpezarJuego(timer, queue);
@@ -346,17 +354,20 @@ int main()
     List* botones = createList(); // lista con botones del menú principal
 
     ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("button.png");
-    Boton* boton = crearBoton(botonPrueba, 513, 181, 500, 500, 0);
+    Boton* boton = crearBoton(botonPrueba, 513, 181, 500, 350, 0);
     pushFront(botones, boton);
 
-    menuCrearPartida(timer, queue);
+    botonPrueba = al_load_bitmap("Exit.png");
+    boton = crearBoton(botonPrueba, 522, 183, 800, 350, 2);
+    pushFront(botones, boton);
+
+    //menuCrearPartida(timer, queue);
 
     //menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
 
     int botonMouse, click, mx, my;
     while (1)
     {
-        break; // eliminar cuando el menú esté listo
 
         botonMouse = -1;
         click = 0;
@@ -388,7 +399,8 @@ int main()
         {
             botonMouse = encontrarBoton(botones, mx, my);
 
-            if(botonMouse == 0) menuCrearPartida(timer, queue);
+            if (botonMouse == 0) menuCrearPartida(timer, queue);
+            else if (botonMouse == 2) break;
             //código que maneja los casos usando el id de los botones
         }
 
