@@ -185,15 +185,20 @@ int encontrarCarta(int mx, int my)
     return -1;
 }
 
-/*bool sePuedeJugar(Estado* estado, Jugador* jugador, int cartaMouse) {
+bool sePuedeJugar(Estado* estado, Jugador* jugador, int cartaMouse) {
     List* lista = jugador->listaCartas;
     Carta* carta = firstList(lista);
+    Carta* cartaJugada = lastList(estado->mazo);
 
     for (int i = 0; i < cartaMouse - 1; i++) {
         carta = nextList(lista);
     }
 
-}*/
+    if ((carta->especial == 0) || (carta->especial == 1))return true;
+    if ((carta->num == cartaJugada->num) || (carta->color == cartaJugada->color))return true;
+
+    return false;
+}
 
 void jugarCarta(Estado* estado, Jugador* jugador, int cartaMouse)
 {
