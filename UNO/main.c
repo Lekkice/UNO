@@ -508,6 +508,8 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     }
 
     generarMazo(arregloCartas,estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona) .si funciona.
+    carta = popCurrent(estado->mazo);
+    pushBack(estado->cartasJugadas, carta);
 
     /*jugador = firstList(estado->jugadores);
     while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
