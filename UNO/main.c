@@ -236,20 +236,20 @@ bool menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Next.png");
-    Boton *boton = crearBoton(botonPrueba, 513, 181, 120, 180, 2);
-    PushFront(botones, boton);
+    boton = crearBoton(botonPrueba, 513, 181, 120, 180, 2);
+    pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("Exit.png");
-    Boton *boton = crearBoton(botonPrueba, 522, 183, 120, 180, 3);
-    PushFront(botones, boton);
+    boton = crearBoton(botonPrueba, 522, 183, 120, 180, 3);
+    pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("play.png");
-    Boton *boton = crearBoton(botonPrueba, 510, 372, 100, 250, 4);
-    PushFront(botones, boton);
+    boton = crearBoton(botonPrueba, 510, 372, 100, 250, 4);
+    pushFront(botones, boton);
 
     botonPrueba = al_load_bitmap("close.png");
-    Boton *boton = crearBoton(botonPrueba, 517, 240, 200, 250, 5);
-    PushFront(botones, boton);
+    boton = crearBoton(botonPrueba, 517, 240, 200, 250, 5);
+    pushFront(botones, boton);
 
     while (1)
     {
