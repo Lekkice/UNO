@@ -224,7 +224,6 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     int mx = 0, my = 0, click = 0, botonMouse, numPlayers, dif;
     bool redraw;
     bool done = false;
-    bool flag;
     ALLEGRO_EVENT event;
     ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
 
@@ -297,11 +296,10 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
                 dif--;
             case 4:
                 printf("se dio a play\n");
+                menuEmpezarJuego(timer, queue);
                 break;
             case 5:
-                printf("se dio a salir");
-                flag = false;
-                break;
+                return;
             }
         }
 
@@ -320,8 +318,6 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
         //printf("%i , %i", numPlayers, dif);
     }
-    
-    if (flag)menuEmpezarJuego(timer, queue);
 }
 
 int main()
@@ -342,7 +338,6 @@ int main()
 
     bool redraw = true;
     bool done = false;
-    bool flag;
     ALLEGRO_EVENT event;
 
     al_start_timer(timer);
