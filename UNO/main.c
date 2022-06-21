@@ -186,15 +186,21 @@ int encontrarCarta(int mx, int my)
 }
 
 bool sePuedeJugar(Estado* estado, Carta *carta) {
-    Carta* cartaJugada = lastList(estado->mazo);
+    Carta* cartaJugada = lastList(estado->cartasJugadas);
 
     /*for (int i = 0; i < cartaMouse - 1; i++) {
         carta = nextList(lista);
     }*/
 
     if ((carta->especial == 0) || (carta->especial == 1))return true;
-    if ((carta->num == cartaJugada->num) || (carta->color == cartaJugada->color))return true;
-    if ((carta->especial > 1) && (carta->color == cartaJugada->color))return true;
+
+    if (carta->especial == -1) {
+        if ((carta->num == cartaJugada->num) || (carta->color == cartaJugada->color))return true;
+    }
+
+    if (carta->especial > 1) {
+        if((carta->especial == cartaJugada->especial) || (carta->color == cartaJugada->color))return true;
+    }
 
     return false;
 }
