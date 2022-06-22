@@ -1,7 +1,6 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
-#include <allegro5/allegro_primitives.h>
 #include <stdbool.h>
 #include "list.h"
 #include <stdio.h>
@@ -149,7 +148,7 @@ void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta carta, int x, int y)
 
     case 4:
         if (carta.color <= 1) {
-            al_draw_bitmap_region(bitCartas, 0.2 + (anchoCarta * 7) + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
+            al_draw_bitmap_region(bitCartas, 0.2 + (anchoCarta * 8) + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
                 x - (anchoCarta / 2), y - (largoCarta / 2), 0);
         }
         else {
@@ -187,6 +186,8 @@ int encontrarCarta(int mx, int my)
 
 bool sePuedeJugar(Estado* estado, Carta *carta) {
     Carta* cartaJugada = firstList(estado->cartasJugadas);
+
+    printf("color carta jugada = %i, especial = %i\n", carta->color, carta->especial);
 
     if ((carta->especial == 0) || (carta->especial == 1))return true;
 
@@ -392,7 +393,6 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
                 printf("%i , %i", numPlayers, dif);
                 break;
             case 4:
-                printf("se dio a play\n");
                 menuEmpezarJuego(timer, queue);
                 break;
             case 5:
