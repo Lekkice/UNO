@@ -36,7 +36,7 @@ typedef struct {
     int pausa;
 }Estado;
 
-void menuEmpezarJuego(ALLEGRO_TIMER*, ALLEGRO_EVENT_QUEUE*);
+void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE*);
 
 void eliminarBotones(List* botones) {
     Boton* boton = popCurrent(botones);
@@ -202,28 +202,27 @@ bool sePuedeJugar(Estado* estado, Carta *carta) {
     return false;
 }
 
-int asignarColor(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
+int asignarColor(ALLEGRO_EVENT_QUEUE* queue) {
     List* botones = createList();
     int mx = 0, my = 0, click, botonMouse;
-    bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
     ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
 
     ALLEGRO_BITMAP* botonRueda = al_load_bitmap("Rojo.png");
-    Boton* boton = crearBoton(botonRueda, 102, 98, 700, 250, 0);
+    Boton* boton = crearBoton(botonRueda, 102, 98, 300, 250, 0);
     pushFront(botones, boton);
 
     botonRueda = al_load_bitmap("Azul.png");
-    boton = crearBoton(botonRueda, 100, 96, 600, 350, 2);
+    boton = crearBoton(botonRueda, 100, 96, 200, 350, 2);
     pushFront(botones, boton);
 
     botonRueda = al_load_bitmap("Verde.png");
-    boton = crearBoton(botonRueda, 100, 98, 600, 250, 3);
+    boton = crearBoton(botonRueda, 100, 98, 200, 250, 3);
     pushFront(botones, boton);
 
     botonRueda = al_load_bitmap("Amarillo.png");
-    boton = crearBoton(botonRueda, 102, 96, 700, 350, 1);
+    boton = crearBoton(botonRueda, 102, 96, 300, 350, 1);
     pushFront(botones, boton);
 
     while (1)
@@ -235,17 +234,12 @@ int asignarColor(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
         switch (event.type)
         {
-        case ALLEGRO_EVENT_TIMER:
-            redraw = true;
-            break;
-
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             done = true;
             break;
         case ALLEGRO_EVENT_MOUSE_AXES:
             mx = event.mouse.x;
             my = event.mouse.y;
-            printf("x = %i, y = %i\n", mx, my);
             break;
         case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
             click = 1;
@@ -257,31 +251,23 @@ int asignarColor(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         if (click && al_is_event_queue_empty(queue))
         {
             botonMouse = encontrarBoton(botones, mx, my);
-
-            if (botonMouse == 0) return 0;
-            else if (botonMouse == 1) return 1;
-            else if (botonMouse == 2) return 2;
-            else if (botonMouse == 3) return 3;
-            //código que maneja los casos usando el id de los botones
+            if (botonMouse != -1) {
+                eliminarBotones(botones);
+                return botonMouse;
+            }
         }
 
-        if (redraw && al_is_event_queue_empty(queue))
+        if (al_is_event_queue_empty(queue))
         {
-            al_clear_to_color(al_map_rgb(255, 255, 255));
-
-            al_draw_bitmap(fondo, 0, 0, 0);
-
             dibujarBotones(botones);
 
             al_flip_display();
-
-            redraw = false;
         }
 
     }
 }
 
-void jugarCarta(Estado* estado, Jugador* jugador, int cartaMouse, ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue)
+void jugarCarta(Estado* estado, Jugador* jugador, int cartaMouse, ALLEGRO_EVENT_QUEUE* queue)
 {
     List* lista = jugador->listaCartas;
     Carta* carta = firstList(lista);
@@ -291,7 +277,7 @@ void jugarCarta(Estado* estado, Jugador* jugador, int cartaMouse, ALLEGRO_TIMER*
     }
 
     if (sePuedeJugar(estado, carta)) {
-        if ((carta->especial == 0) || (carta->especial == 1))carta->color = asignarColor(timer, queue);
+        if ((carta->especial == 0) || (carta->especial == 1)) carta->color = asignarColor(queue);
         pushFront(estado->cartasJugadas, carta);
         popCurrent(lista);
     }
@@ -309,7 +295,7 @@ void terminarTurno(Estado* estado)
     estado->pausa = 1;
 }
 
-void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
+void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
     List* botones = createList();
     int mx = 0, my = 0, click = 0, botonMouse, numPlayers = 0, dif = 0;
     bool redraw = true;
@@ -343,8 +329,6 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
     while (1)
     {
-        // break; // eliminar cuando el menú esté listo
-
         int botonMouse = -1;
         int click = 0;
 
@@ -352,17 +336,13 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
         switch (event.type)
         {
-        case ALLEGRO_EVENT_TIMER:
-            redraw = true;
-            break;
-
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             done = true;
             break;
         case ALLEGRO_EVENT_MOUSE_AXES:
             mx = event.mouse.x;
             my = event.mouse.y;
-            printf("x = %i, y = %i\n", mx, my);
+            //printf("x = %i, y = %i\n", mx, my);
             break;
         case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
             click = 1;
@@ -393,9 +373,10 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
                 printf("%i , %i", numPlayers, dif);
                 break;
             case 4:
-                menuEmpezarJuego(timer, queue);
+                menuEmpezarJuego(queue);
                 break;
             case 5:
+                eliminarBotones(botones);
                 return;
             }
         }
@@ -424,20 +405,20 @@ int main()
     al_install_mouse();
     al_init_primitives_addon();
 
-    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0);
+    // ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
     ALLEGRO_DISPLAY* disp = al_create_display(1280, 720);
     ALLEGRO_FONT* font = al_create_builtin_font();
 
     al_register_event_source(queue, al_get_display_event_source(disp));
-    al_register_event_source(queue, al_get_timer_event_source(timer));
+    //al_register_event_source(queue, al_get_timer_event_source(timer));
     al_register_event_source(queue, al_get_mouse_event_source());
 
     bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
 
-    al_start_timer(timer);
+    //al_start_timer(timer);
     ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
 
     List* botones = createList(); // lista con botones del menú principal
@@ -458,10 +439,6 @@ int main()
     boton = crearBoton(botonPrueba, 147, 50, 625, 562, 3);
     pushFront(botones, boton);
 
-    //menuCrearPartida(timer, queue);
-
-    //menuEmpezarJuego(timer, queue); // se debe llamar al presionar un botón en el menú principal
-
     int botonMouse, click, mx, my;
     while (1)
     {
@@ -473,17 +450,13 @@ int main()
 
         switch (event.type)
         {
-        case ALLEGRO_EVENT_TIMER:
-            redraw = true;
-            break;
-
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             done = true;
             break;
         case ALLEGRO_EVENT_MOUSE_AXES:
             mx = event.mouse.x;
             my = event.mouse.y;
-            printf("x = %i, y = %i\n", mx, my);
+            //printf("x = %i, y = %i\n", mx, my);
             break;
         case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
             click = 1;
@@ -496,7 +469,7 @@ int main()
         {
             botonMouse = encontrarBoton(botones, mx, my);
 
-            if (botonMouse == 0) menuCrearPartida(timer, queue);
+            if (botonMouse == 0) menuCrearPartida(queue);
             else if (botonMouse == 3) break;
             //código que maneja los casos usando el id de los botones
         }
@@ -518,13 +491,13 @@ int main()
 
     al_destroy_font(font);
     al_destroy_display(disp);
-    al_destroy_timer(timer);
+    //al_destroy_timer(timer);
     al_destroy_event_queue(queue);
 
     return 0;
 }
 
-void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
+void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     int i,j;
     int posArr;
     bool redraw = true;
@@ -624,10 +597,6 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
 
         switch (event.type)
         {
-        case ALLEGRO_EVENT_TIMER:
-            redraw = true;
-            break;
-
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             done = true;
             break;
@@ -651,7 +620,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
                 cartaMouse = encontrarCarta(mx, my);
                 if (cartaMouse != -1 && cartaMouse <= countList(jugador->listaCartas))
                 {
-                    jugarCarta(estado, jugador, cartaMouse, timer, queue);
+                    jugarCarta(estado, jugador, cartaMouse, queue);
                     terminarTurno(estado);
                 }
 
@@ -673,7 +642,7 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
             }
         }
 
-        if (redraw && al_is_event_queue_empty(queue))
+        if (al_is_event_queue_empty(queue))
         {
             al_clear_to_color(al_map_rgb(255, 255, 255));
 
@@ -692,8 +661,6 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
             }
 
             al_flip_display();
-
-            redraw = false;
         }
     }
 
