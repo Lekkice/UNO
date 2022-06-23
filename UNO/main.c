@@ -31,12 +31,8 @@ typedef struct {
 
 typedef struct {
     bool sacarCarta;
-    int tirarM2;
-    int saltarTurno;
-    int cambiarSentido;
-    int tirarNormal;
-    int offset;
-}Acciones;
+    int offset; //la idea del offset seria que dandole un valor mas alto o mas bajo haga que el bot juegue mas agresivo o menos agresivo
+}Acciones; //no se si haga falta esta estructura o si se pueda hacer directamente en el jugador
 
 typedef struct {
     List* jugadores;
@@ -413,7 +409,7 @@ int main()
     al_init();
     al_init_image_addon();
     al_install_mouse();
-    al_init_primitives_addon();w
+    al_init_primitives_addon();
 
     // ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
@@ -528,9 +524,9 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     estado->mazo = createList(); // generarMazo()
     estado->pausa = 0;
 
-    for (i = 2; i <= numPlayers; i++) {
+    /*for (i = 2; i <= numPlayers; i++) {
         pushBack(estado->jugadores, crearBots(dificultad, i));
-    }
+    }*/
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
@@ -694,35 +690,49 @@ Jugador* crearBots(int dificulta, int numplayers, int numeroBot) {
     
 }
 
-void jugarCartaBot() {
+void jugarCartaBot(Estado *estado, Jugador *jugador) {
+    int valorJugada,i;
+    List *jugadores = firstList(estado->jugadores);
+    Carta *carta = firstList(jugador->listaCartas);
+    Carta* ultimaCarta = firstList(estado->cartasJugadas);
 
-
-    while (jugador->cartas) {
-        switch (carta->especial) {
-        case -1:
-            if (Jugadores->prev->cantidad >= 5)
-                valorJugada = (jugador->prev->cantidad - 5) + 1;
-            if (Jugadores->next->cantidad >= 5)
-                valorJugada = (jugador->next->cantidad - 5) + 1;
-        case 0:
-            if (jugador->cantidad <= 3)
-                valorJugada += 2;
-            for (i = 0; i <= cantidad; i++) {
-                if ((carta->especial != 1 && carta->especial != 0) && carta->color == cartaJugada->carta->color)
-                    valorJugada--;
+    while (jugador->listaCartas) {
+        //aca falta reiniciar a valorJugada a su valor predefinido, para que todas las cartas se evaluen bajo el mismo juicio
+        if (sePuedeJugar(estado, carta)) {
+            switch (carta->especial) {//aca veo que tipo de carta estoy evaluando
+            case -1:
+                if (jugadores->prev->cantidad >= 5)
+                    valorJugada = (jugadores->prev->cantidad - 5) + 1;
+                if (jugadores->next->cantidad >= 5)
+                    valorJugada = (jugadores->next->cantidad - 5) + 1;
+            case 0:
+                if (jugador->cantidad <= 3)
+                    valorJugada += 2;
+                for (i = 0; i <= cantidad; i++) {
+                    if ((carta->especial != 1 && carta->especial != 0) && carta->color == ultimaCarta->color)
+                        valorJugada--;
+                }
+            case 1:
+                if (ultimaCarta->especial == 1)
+                    valorJugada += 3;
+                if (jugador->cantidad <= 3)
+                    valorJugada += 2;
+                if (jugador->cantidad > 3)
+                    valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);
+            case 2: //la idea es ir le dando valores a cada carta y luego a la que tenga valor mas alto jugarla
             }
         }
-        case 1:
-            if (cartaJugada->especial == 1)
-                valorJugada += 3;
-            if (jugador->cantidad <= 3)
-                valorJugada += 2;
-            if (jugador->cantidad > 3)
-                valorJugada = valorJugada - ((jugador->cantidad - 3) * -1)
-        case 2:
 
+        //ya fuera del switch asignar el valor de valorJugada a algo para luego comparar cual es la jugada con mas valor
+        carta = nextList(jugador->listaCartas);//avanzo en la mano del bot
     }
 
+    for (i = 0; i < jugador->cantidad; i++) {
+        /*
+        revisar el valor que tiene cada carta y tomar la que tiene mayor valor
+        */
+    }
 
-
+    //aca jugar la carta del bot
+    return;
 }
