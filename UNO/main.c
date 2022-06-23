@@ -27,6 +27,7 @@ typedef struct {
     int jugador; // 1 al 4
     bool esBot;
     Acciones* accion;
+    int points;
 }Jugador;
 
 typedef struct {
@@ -51,6 +52,28 @@ void eliminarBotones(List* botones) {
         free(boton);
 
         boton = popCurrent(botones);
+    }
+}
+
+void calcularPuntuacion(List *jugadores){           //Entregarle estado->jugadores
+    Jugador *jugador = firstList(jugadores);
+    Carta* carta = firstList(jugador->listaCartas);
+    int cont = 0;
+
+    while (jugador) {
+        while (carta) {
+            if (carta->especial == -1) {
+                cont += carta->num;
+            }
+            if (carta->especial == 0 || carta->especial == 1) {
+                cont += 20;
+            }
+            else cont += 10;
+            carta = nextList(jugador->listaCartas);
+        }
+        jugador->points = cont;
+        cont = 0;
+        jugador = nextList(jugadores);
     }
 }
 
