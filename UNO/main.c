@@ -27,7 +27,17 @@ typedef struct {
     int cantidad;
     int jugador; // 1 al 4
     bool esBot;
+    Acciones* accion;
 }Jugador;
+
+typedef struct {
+    bool sacarCarta;
+    int tirarM2;
+    int saltarTurno;
+    int cambiarSentido;
+    int tirarNormal;
+    int offset;
+}Acciones;
 
 typedef struct {
     List* jugadores;
@@ -393,7 +403,7 @@ void menuCrearPartida(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
                 break;
             case 4:
                 printf("se dio a play\n");
-                menuEmpezarJuego(timer, queue);
+                menuEmpezarJuego(timer, queue, dif, numPlayers);
                 break;
             case 5:
                 return;
@@ -422,7 +432,7 @@ int main()
     al_init();
     al_init_image_addon();
     al_install_mouse();
-    al_init_primitives_addon();
+    al_init_primitives_addon();w
 
     ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
@@ -524,7 +534,7 @@ int main()
     return 0;
 }
 
-void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
+void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue, int dificultad, int numPlayers) {
     int i,j;
     int posArr;
     bool redraw = true;
@@ -544,6 +554,10 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
     estado->turnoJugador = 0;
     estado->mazo = createList(); // generarMazo()
     estado->pausa = 0;
+
+    for (i = 2; i <= numPlayers; i++) {
+        pushBack(estado->jugadores, crearBots(dificultad, i));
+    }
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
@@ -703,4 +717,45 @@ void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
         al_destroy_bitmap(bitCartas);
         return;
     }
+}
+
+Jugador* crearBots(int dificulta, int numplayers, int numeroBot) {
+    Jugador* bot = (Jugador*)malloc(sizeof(Jugador));
+    bot->esBot = true;
+    bot->jugador = numeroBot;
+    bot->cantidad = 7;
+    
+}
+
+void jugarCartaBot() {
+
+
+    while (jugador->cartas) {
+        switch (carta->especial) {
+        case -1:
+            if (Jugadores->prev->cantidad >= 5)
+                valorJugada = (jugador->prev->cantidad - 5) + 1;
+            if (Jugadores->next->cantidad >= 5)
+                valorJugada = (jugador->next->cantidad - 5) + 1;
+        case 0:
+            if (jugador->cantidad <= 3)
+                valorJugada += 2;
+            for (i = 0; i <= cantidad; i++) {
+                if ((carta->especial != 1 && carta->especial != 0) && carta->color == cartaJugada->carta->color)
+                    valorJugada--;
+            }
+        }
+        case 1:
+            if (cartaJugada->especial == 1)
+                valorJugada += 3;
+            if (jugador->cantidad <= 3)
+                valorJugada += 2;
+            if (jugador->cantidad > 3)
+                valorJugada = valorJugada - ((jugador->cantidad - 3) * -1)
+        case 2:
+
+    }
+
+
+
 }
