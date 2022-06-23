@@ -19,6 +19,8 @@ typedef struct {
     int num;       // 1 al 9
     int especial;  // -1 = normal, 0 = cambia color, 1 = +4, 2 = saltar turno, 3 = +2, 4 = cambiar orden
     int cont;
+    int valorJugada;
+    bool sePuede;
 }Carta;
 
 typedef struct {
@@ -503,7 +505,7 @@ int main()
     return 0;
 }
 
-void menuEmpezarJuego(ALLEGRO_TIMER* timer, ALLEGRO_EVENT_QUEUE* queue) {
+void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     int i,j;
     int posArr;
     bool redraw = true;
@@ -694,17 +696,20 @@ void jugarCartaBot(Estado *estado, Jugador *jugador) {
     int valorJugada,i;
     List *jugadores = firstList(estado->jugadores);
     Carta *carta = firstList(jugador->listaCartas);
+    List *aux = 
     Carta* ultimaCarta = firstList(estado->cartasJugadas);
 
     while (jugador->listaCartas) {
         //aca falta reiniciar a valorJugada a su valor predefinido, para que todas las cartas se evaluen bajo el mismo juicio
         if (sePuedeJugar(estado, carta)) {
+            carta->sePuede = true;
             switch (carta->especial) {//aca veo que tipo de carta estoy evaluando
             case -1:
                 if (jugadores->prev->cantidad >= 5)
                     valorJugada = (jugadores->prev->cantidad - 5) + 1;
                 if (jugadores->next->cantidad >= 5)
                     valorJugada = (jugadores->next->cantidad - 5) + 1;
+                break;
             case 0:
                 if (jugador->cantidad <= 3)
                     valorJugada += 2;
@@ -712,6 +717,7 @@ void jugarCartaBot(Estado *estado, Jugador *jugador) {
                     if ((carta->especial != 1 && carta->especial != 0) && carta->color == ultimaCarta->color)
                         valorJugada--;
                 }
+                break;
             case 1:
                 if (ultimaCarta->especial == 1)
                     valorJugada += 3;
@@ -719,9 +725,20 @@ void jugarCartaBot(Estado *estado, Jugador *jugador) {
                     valorJugada += 2;
                 if (jugador->cantidad > 3)
                     valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);
-            case 2: //la idea es ir le dando valores a cada carta y luego a la que tenga valor mas alto jugarla
+                break;
+            case 2:
+                if (jugadores->next->cantidad <= 3)
+                    valorJugada += 3;
+                break;
             }
+            case 3:
+
+                break;
+            case 4:
+
+                break;
         }
+        else carta->sePuede = false;
 
         //ya fuera del switch asignar el valor de valorJugada a algo para luego comparar cual es la jugada con mas valor
         carta = nextList(jugador->listaCartas);//avanzo en la mano del bot
