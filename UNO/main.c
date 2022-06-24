@@ -537,6 +537,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     int posArr;
     bool redraw = true;
     bool done = false;
+    bool esBot;
     ALLEGRO_EVENT event;
 
     ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/fondo.png");
@@ -553,8 +554,10 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     estado->mazo = createList();
     estado->pausa = 0;
 
-    /*for (i = 2; i <= numPlayers; i++) {
-        pushBack(estado->jugadores, crearBots(i));
+    /*for (i = 1; i <= numPlayers; i++) {
+        if(i >numPlayers)esBot = true;
+        else esBot = false;
+        pushBack(estado->jugadores, crearBots(i,esBot));
     }*/
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
@@ -771,8 +774,6 @@ Jugador* crearJugadores(int i, bool loEs) {
 
         carta->valorJugada = valorJugada;
         pushFront(auxMano,carta);
-
-        //ya fuera del switch asignar el valor de valorJugada a algo para luego comparar cual es la jugada con mas valor
         carta = nextList(jugador->listaCartas);//avanzo en la mano del bot
     }
     
