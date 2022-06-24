@@ -722,7 +722,7 @@ Jugador* crearJugadores(int i, bool loEs) {
 }
 
 /*void jugarCartaBot(Estado* estado, Jugador* jugador) {
-    int valorJugada,i;
+    int valorJugada,i,cont;
     List *jugadores = firstList(estado->jugadores);
     Carta *carta = firstList(jugador->listaCartas);
     Carta *auxCarta;
@@ -730,7 +730,7 @@ Jugador* crearJugadores(int i, bool loEs) {
     Carta* ultimaCarta = firstList(estado->cartasJugadas);
 
     while (jugador->listaCartas) {
-        //aca falta reiniciar a valorJugada a su valor predefinido, para que todas las cartas se evaluen bajo el mismo juicio
+        valorJugada = 0;
         if (sePuedeJugar(estado, carta)) {
             carta->sePuede = true;
             switch (carta->especial) {//aca veo que tipo de carta estoy evaluando
@@ -779,11 +779,16 @@ Jugador* crearJugadores(int i, bool loEs) {
     
     carta = firstList(auxMano);
     auxCarta = carta->valorJugada;
+    cont = 0;
     for (i = 0; i < jugador->cantidad-1; i++) {
       carta = nextList(auxMano);
-      if(carta->valorJugada > auxCarta->valorJugada)auxCarta = carta;
+      if(carta->valorJugada > auxCarta->valorJugada)
+      {
+        cont = i;
+        auxCarta = carta;
+      }
     }
 
-    //aca jugar la carta del bot
+    jugarCarta(estado,jugador,cont,queue);
     return;
 }*/
