@@ -26,7 +26,7 @@ typedef struct {
 typedef struct {
     List* listaCartas;
     int cantidad;
-    int jugador; // 1 al 4
+    int num; // 1 al 4
     bool esBot;
     int points;  //puntuacion
 }Jugador;
@@ -40,6 +40,32 @@ typedef struct {
 }Estado;
 
 void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE*);
+
+int encontrarPosibilidades(List* cartas, Carta* cartaJugada) {
+    Carta* carta = firstList(cartas);
+    int num = 0;
+    while (carta) {
+        if (sePuedeJugar(cartaJugada, carta)) num++;
+        carta = nextList(cartas);
+    }
+    return num;
+}
+
+int encontrarMejorCarta(List* listaCartas) {
+    Carta* cartaJugada = firstList(listaCartas);
+    int maxIdx;
+    int max = 0, i = 0;
+    while (cartaJugada) {
+        int posib = encontrarPosibilidades(listaCartas, cartaJugada);
+        if (posib > max) {
+            max = posib;
+            maxIdx = i;
+        }
+        i++;
+        cartaJugada = nextList(listaCartas);
+    }
+    return maxIdx;
+}
 
 void eliminarBotones(List* botones) {
     Boton* boton = popCurrent(botones);
@@ -221,9 +247,7 @@ int encontrarCarta(int mx, int my)
     return -1;
 }
 
-bool sePuedeJugar(Estado* estado, Carta *carta) {
-    Carta* cartaJugada = firstList(estado->cartasJugadas);
-
+bool sePuedeJugar(Carta* cartaJugada, Carta *carta) {
     //printf("color carta jugada = %i, especial = %i\n", carta->color, carta->especial);
 
     if ((carta->especial == 0) || (carta->especial == 1)) return true;
@@ -306,7 +330,7 @@ int asignarColor(ALLEGRO_EVENT_QUEUE* queue) {
     }
 }
 
-void jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QUEUE* queue)
+void jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QUEUE* queue) // si es bot, queue = NULL
 {
     List* lista = jugador->listaCartas;
     Carta* carta = firstList(lista);
@@ -315,8 +339,14 @@ void jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         carta = nextList(lista);
     }
 
-    if (sePuedeJugar(estado, carta)) {
-        if ((carta->especial == 0) || (carta->especial == 1)) carta->color = asignarColor(queue);
+    if (sePuedeJugar(firstList(estado->cartasJugadas), carta)) {
+        if (!jugador->esBot) {
+            if ((carta->especial == 0) || (carta->especial == 1)) carta->color = asignarColor(queue);
+        }
+        else {
+            // elegirMejorColor(); o algo así
+        }
+        
         pushFront(estado->cartasJugadas, carta);
         popCurrent(lista);
     }
