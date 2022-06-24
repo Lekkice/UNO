@@ -28,13 +28,7 @@ typedef struct {
     int cantidad;
     int jugador; // 1 al 4
     bool esBot;
-    Acciones* accion;
 }Jugador;
-
-typedef struct {
-    bool sacarCarta;
-    int offset; //la idea del offset seria que dandole un valor mas alto o mas bajo haga que el bot juegue mas agresivo o menos agresivo
-}Acciones; //no se si haga falta esta estructura o si se pueda hacer directamente en el jugador
 
 typedef struct {
     List* jugadores;
@@ -693,11 +687,13 @@ Jugador* crearBots(int dificulta, int numplayers, int numeroBot) {
 }
 
 void jugarCartaBot(Estado *estado, Jugador *jugador) {
-    int valorJugada,i;
+    int valorJugada,i,valorMay;
     List *jugadores = firstList(estado->jugadores);
     Carta *carta = firstList(jugador->listaCartas);
-    List *aux = 
-    Carta* ultimaCarta = firstList(estado->cartasJugadas);
+    List* cartasEvaluadas = createList();
+    List *auxMano = jugador->listaCartas;
+    Carta* auxCarta;
+    Carta *ultimaCarta = firstList(estado->cartasJugadas);
 
     while (jugador->listaCartas) {
         //aca falta reiniciar a valorJugada a su valor predefinido, para que todas las cartas se evaluen bajo el mismo juicio
@@ -713,8 +709,10 @@ void jugarCartaBot(Estado *estado, Jugador *jugador) {
             case 0:
                 if (jugador->cantidad <= 3)
                     valorJugada += 2;
+                firstList(aux);
                 for (i = 0; i <= cantidad; i++) {
-                    if ((carta->especial != 1 && carta->especial != 0) && carta->color == ultimaCarta->color)
+                    auxCarta = nextList(auxMano);
+                    if ((auxCarta->especial != 1 && auxCarta->especial != 0) && auxCarta->color == ultimaCarta->color)
                         valorJugada--;
                 }
                 break;
@@ -740,14 +738,15 @@ void jugarCartaBot(Estado *estado, Jugador *jugador) {
         }
         else carta->sePuede = false;
 
-        //ya fuera del switch asignar el valor de valorJugada a algo para luego comparar cual es la jugada con mas valor
+        carta->valorJugada = valorJugada;
+        pushFront(cartasEvaluadas, carta);//ya fuera del switch asignar el valor de valorJugada a algo para luego comparar cual es la jugada con mas valor
         carta = nextList(jugador->listaCartas);//avanzo en la mano del bot
     }
 
+    carta = firstList(cartasEvaluadas);
     for (i = 0; i < jugador->cantidad; i++) {
-        /*
-        revisar el valor que tiene cada carta y tomar la que tiene mayor valor
-        */
+        if (carta->valorJugada > valorMay)valorMay = carta->valorJugada;
+        carta = nextList(cartasEvaluadas);
     }
 
     //aca jugar la carta del bot
