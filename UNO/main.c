@@ -28,13 +28,7 @@ typedef struct {
     int cantidad;
     int jugador; // 1 al 4
     bool esBot;
-    Acciones* accion;
 }Jugador;
-
-typedef struct {
-    bool sacarCarta;
-    int offset; //la idea del offset seria que dandole un valor mas alto o mas bajo haga que el bot juegue mas agresivo o menos agresivo
-}Acciones; //no se si haga falta esta estructura o si se pueda hacer directamente en el jugador
 
 typedef struct {
     List* jugadores;
@@ -123,44 +117,56 @@ void sacarCarta(List* mazo, List* listaCartas) {
     pushBack(listaCartas, carta);
 }
 
-void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta carta, int x, int y)
+void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta* carta, int x, int y)
 {
     int anchoCarta = 94;
     int largoCarta = 141;
-    switch (carta.especial)
+    switch (carta->especial)
     {
     case -1:
-        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * (carta.num - 1), 1 + largoCarta * carta.color, anchoCarta, largoCarta,
+        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * (carta->num - 1), 1 + largoCarta * carta->color, anchoCarta, largoCarta,
             x - (anchoCarta / 2), y - (largoCarta / 2), 0);
         break;
 
     case 0:
-        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 9, 1 + largoCarta * 0, anchoCarta, largoCarta,
-            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        if (carta->color == -1) {
+            al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 9, 1 + largoCarta * 0, anchoCarta, largoCarta,
+                x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        }
+        else {
+            al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 6 + anchoCarta * (carta->color), 1 + largoCarta * 5, anchoCarta, largoCarta,
+                x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        };
         break;
 
     case 1:
-        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 9, 1 + largoCarta * 2, anchoCarta, largoCarta,
-            x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        if (carta->color == -1) {
+            al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 9, 1 + largoCarta * 2, anchoCarta, largoCarta,
+                x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        }
+        else {
+            al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 2 + anchoCarta * (carta->color), 1 + largoCarta * 5, anchoCarta, largoCarta,
+                x - (anchoCarta / 2), y - (largoCarta / 2), 0);
+        };
         break;
 
     case 2:
-        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
+        al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * carta->color, 1 + largoCarta * 4, anchoCarta, largoCarta,
             x - (anchoCarta / 2), y - (largoCarta / 2), 0);
         break;
 
     case 3:
-        al_draw_bitmap_region(bitCartas, 0.2 + (anchoCarta * 4) + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
+        al_draw_bitmap_region(bitCartas, 0.2 + (anchoCarta * 4) + anchoCarta * carta->color, 1 + largoCarta * 4, anchoCarta, largoCarta,
             x - (anchoCarta / 2), y - (largoCarta / 2), 0);
         break;
 
     case 4:
-        if (carta.color <= 1) {
-            al_draw_bitmap_region(bitCartas, 0.2 + (anchoCarta * 8) + anchoCarta * carta.color, 1 + largoCarta * 4, anchoCarta, largoCarta,
+        if (carta->color <= 1) {
+            al_draw_bitmap_region(bitCartas, 0.2 + (anchoCarta * 8) + anchoCarta * carta->color, 1 + largoCarta * 4, anchoCarta, largoCarta,
                 x - (anchoCarta / 2), y - (largoCarta / 2), 0);
         }
         else {
-            al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * (carta.color - 2), 1 + largoCarta * 5, anchoCarta, largoCarta,
+            al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * (carta->color - 2), 1 + largoCarta * 5, anchoCarta, largoCarta,
                 x - (anchoCarta / 2), y - (largoCarta / 2), 0);
         }
         break;
@@ -174,7 +180,7 @@ void dibujarCartas(Jugador* jugador, ALLEGRO_BITMAP* bitCartas)
     int x = 100, y = 600;
     while (carta)
     {
-        dibujarCarta(bitCartas, *carta, x, y);
+        dibujarCarta(bitCartas, carta, x, y);
         x += 100;
         carta = nextList(jugador->listaCartas);
     }
@@ -413,20 +419,17 @@ int main()
     al_install_mouse();
     al_init_primitives_addon();
 
-    // ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0);
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
     ALLEGRO_DISPLAY* disp = al_create_display(1280, 720);
     ALLEGRO_FONT* font = al_create_builtin_font();
 
     al_register_event_source(queue, al_get_display_event_source(disp));
-    //al_register_event_source(queue, al_get_timer_event_source(timer));
     al_register_event_source(queue, al_get_mouse_event_source());
 
     bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
 
-    //al_start_timer(timer);
     ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
 
     List* botones = createList(); // lista con botones del menú principal
@@ -499,7 +502,6 @@ int main()
 
     al_destroy_font(font);
     al_destroy_display(disp);
-    //al_destroy_timer(timer);
     al_destroy_event_queue(queue);
 
     return 0;
@@ -568,7 +570,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     for (i = 0; i < 2; i++) {
         carta = (Carta*)malloc(sizeof(Carta));
         carta->num = NULL;
-        carta->color = NULL;
+        carta->color = -1;
         carta->especial = i;
         carta->cont = 4;
         arregloCartas[posArr] = carta;
@@ -597,7 +599,6 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
 
     List* botones = createList();
     pushBack(botones, crearBoton(al_load_bitmap("backside.png"), 94, 141, (1280 / 2) + 100, 720/2, 1));
-    // dibujarCarta(bitCartas, *cartaJugada, (1280 / 2) - 200, 720 / 2);
 
     while (1)
     {
@@ -669,7 +670,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
             cartaJugada = firstList(estado->cartasJugadas);
             if (cartaJugada)
             {
-                dibujarCarta(bitCartas, *cartaJugada, (1280 / 2) - 200, 720 / 2);
+                dibujarCarta(bitCartas, cartaJugada, (1280 / 2) - 200, 720 / 2);
             }
 
             al_flip_display();
@@ -689,67 +690,66 @@ Jugador* crearBots(int dificulta, int numplayers, int numeroBot) {
     bot->esBot = true;
     bot->jugador = numeroBot;
     bot->cantidad = 7;
-    
 }
 
-void jugarCartaBot(Estado *estado, Jugador *jugador) {
-    int valorJugada,i;
-    List *jugadores = firstList(estado->jugadores);
-    Carta *carta = firstList(jugador->listaCartas);
-    List *aux = 
-    Carta* ultimaCarta = firstList(estado->cartasJugadas);
-
-    while (jugador->listaCartas) {
-        //aca falta reiniciar a valorJugada a su valor predefinido, para que todas las cartas se evaluen bajo el mismo juicio
-        if (sePuedeJugar(estado, carta)) {
-            carta->sePuede = true;
-            switch (carta->especial) {//aca veo que tipo de carta estoy evaluando
-            case -1:
-                if (jugadores->prev->cantidad >= 5)
-                    valorJugada = (jugadores->prev->cantidad - 5) + 1;
-                if (jugadores->next->cantidad >= 5)
-                    valorJugada = (jugadores->next->cantidad - 5) + 1;
-                break;
-            case 0:
-                if (jugador->cantidad <= 3)
-                    valorJugada += 2;
-                for (i = 0; i <= cantidad; i++) {
-                    if ((carta->especial != 1 && carta->especial != 0) && carta->color == ultimaCarta->color)
-                        valorJugada--;
-                }
-                break;
-            case 1:
-                if (ultimaCarta->especial == 1)
-                    valorJugada += 3;
-                if (jugador->cantidad <= 3)
-                    valorJugada += 2;
-                if (jugador->cantidad > 3)
-                    valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);
-                break;
-            case 2:
-                if (jugadores->next->cantidad <= 3)
-                    valorJugada += 3;
-                break;
-            }
-            case 3:
-
-                break;
-            case 4:
-
-                break;
-        }
-        else carta->sePuede = false;
-
-        //ya fuera del switch asignar el valor de valorJugada a algo para luego comparar cual es la jugada con mas valor
-        carta = nextList(jugador->listaCartas);//avanzo en la mano del bot
-    }
-
-    for (i = 0; i < jugador->cantidad; i++) {
-        /*
-        revisar el valor que tiene cada carta y tomar la que tiene mayor valor
-        */
-    }
-
-    //aca jugar la carta del bot
-    return;
-}
+//void jugarCartaBot(Estado *estado, Jugador *jugador) {
+//    int valorJugada,i;
+//    List *jugadores = firstList(estado->jugadores);
+//    Carta *carta = firstList(jugador->listaCartas);
+//    List *aux = 
+//    Carta* ultimaCarta = firstList(estado->cartasJugadas);
+//
+//    while (jugador->listaCartas) {
+//        //aca falta reiniciar a valorJugada a su valor predefinido, para que todas las cartas se evaluen bajo el mismo juicio
+//        if (sePuedeJugar(estado, carta)) {
+//            carta->sePuede = true;
+//            switch (carta->especial) {//aca veo que tipo de carta estoy evaluando
+//            case -1:
+//                if (jugadores->prev->cantidad >= 5)
+//                    valorJugada = (jugadores->prev->cantidad - 5) + 1;
+//                if (jugadores->next->cantidad >= 5)
+//                    valorJugada = (jugadores->next->cantidad - 5) + 1;
+//                break;
+//            case 0:
+//                if (jugador->cantidad <= 3)
+//                    valorJugada += 2;
+//                for (i = 0; i <= cantidad; i++) {
+//                    if ((carta->especial != 1 && carta->especial != 0) && carta->color == ultimaCarta->color)
+//                        valorJugada--;
+//                }
+//                break;
+//            case 1:
+//                if (ultimaCarta->especial == 1)
+//                    valorJugada += 3;
+//                if (jugador->cantidad <= 3)
+//                    valorJugada += 2;
+//                if (jugador->cantidad > 3)
+//                    valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);
+//                break;
+//            case 2:
+//                if (jugadores->next->cantidad <= 3)
+//                    valorJugada += 3;
+//                break;
+//            }
+//            case 3:
+//
+//                break;
+//            case 4:
+//
+//                break;
+//        }
+//        else carta->sePuede = false;
+//
+//        //ya fuera del switch asignar el valor de valorJugada a algo para luego comparar cual es la jugada con mas valor
+//        carta = nextList(jugador->listaCartas);//avanzo en la mano del bot
+//    }
+//
+//    for (i = 0; i < jugador->cantidad; i++) {
+//        /*
+//        revisar el valor que tiene cada carta y tomar la que tiene mayor valor
+//        */
+//    }
+//
+//    //aca jugar la carta del bot
+//    return;
+//}
