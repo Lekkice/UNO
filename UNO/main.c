@@ -274,7 +274,7 @@ int asignarColor(ALLEGRO_EVENT_QUEUE* queue) {
         switch (event.type)
         {
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
-            done = true;
+            exit(0);
             break;
         case ALLEGRO_EVENT_MOUSE_AXES:
             mx = event.mouse.x;
@@ -306,11 +306,11 @@ int asignarColor(ALLEGRO_EVENT_QUEUE* queue) {
     }
 }
 
-void jugarCarta(Estado* estado, Jugador* jugador, int cartaMouse, ALLEGRO_EVENT_QUEUE* queue)
+void jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QUEUE* queue)
 {
     List* lista = jugador->listaCartas;
     Carta* carta = firstList(lista);
-    for (int i = 0; i < cartaMouse - 1; i++)
+    for (int i = 0; i < posCarta - 1; i++)
     {
         carta = nextList(lista);
     }
@@ -376,7 +376,7 @@ void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
         switch (event.type)
         {
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
-            done = true;
+            exit(0);
             break;
         case ALLEGRO_EVENT_MOUSE_AXES:
             mx = event.mouse.x;
@@ -487,7 +487,7 @@ int main()
         switch (event.type)
         {
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
-            done = true;
+            exit(0);
             break;
         case ALLEGRO_EVENT_MOUSE_AXES:
             mx = event.mouse.x;
@@ -636,7 +636,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
         switch (event.type)
         {
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
-            done = true;
+            exit(0);
             break;
         case ALLEGRO_EVENT_MOUSE_AXES:
             mx = event.mouse.x;
