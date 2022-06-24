@@ -731,6 +731,7 @@ Jugador* crearJugadores(int i, bool loEs) {
     jugador->listaCartas = createList();
     jugador->jugador = i;
     jugador->esBot = loEs;
+    return jugador;
 }
 
 /*void jugarCartaBot(Estado* estado, Jugador* jugador) {
@@ -763,23 +764,29 @@ Jugador* crearJugadores(int i, bool loEs) {
                 }
                 break;
             case 1:
-                if (ultimaCarta->especial == 1)
-                    valorJugada += 3;
-                if (jugador->cantidad <= 3)
+                /*if (ultimaCarta->especial == 1)
+                    valorJugada += 3;//comentar esto
+                if (jugadores->next->cantidad <= 3)
                     valorJugada += 2;
-                if (jugador->cantidad > 3)
-                    valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);
+                /*if (jugador->cantidad > 3)
+                    valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);//
                 break;
             case 2:
                 if (jugadores->next->cantidad <= 3)
-                    valorJugada += 3;
+                    valorJugada ++;
+                if(jugadores->prev->cantidad <= 3)
+                    valorJugada ++;
                 break;
             }
             case 3:
-
+                if (jugadores->next->cantidad <= 3)
+                    valorJugada += 3;
                 break;
             case 4:
-
+                if (jugadores->next->cantidad <= 3)
+                    valorJugada ++;
+                if(jugadores->prev->cantidad >= 3)
+                    valorJugada ++;
                 break;
         }
         else carta->sePuede = false;
