@@ -658,6 +658,18 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
             //revisa si el mouse está sobre un botón o carta
             if (!estado->pausa)
             {
+                /*if (jugador->esBot) {
+                    jugarCartaBot(estado,jugador)
+                }
+                else {
+                    cartaMouse = encontrarCarta(mx, my);
+                    if (cartaMouse != -1 && cartaMouse <= countList(jugador->listaCartas))
+                    {
+                        jugarCarta(estado, jugador, cartaMouse, queue);
+                        terminarTurno(estado);
+                    }
+                }
+                */
                 cartaMouse = encontrarCarta(mx, my);
                 if (cartaMouse != -1 && cartaMouse <= countList(jugador->listaCartas))
                 {
