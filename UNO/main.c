@@ -28,6 +28,7 @@ typedef struct {
     int cantidad;
     int jugador; // 1 al 4
     bool esBot;
+    int points;  //puntuacion
 }Jugador;
 
 typedef struct {
