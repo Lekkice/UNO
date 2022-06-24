@@ -537,6 +537,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     int posArr;
     bool redraw = true;
     bool done = false;
+    bool esBot;
     ALLEGRO_EVENT event;
 
     ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/fondo.png");
@@ -553,8 +554,10 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     estado->mazo = createList();
     estado->pausa = 0;
 
-    /*for (i = 2; i <= numPlayers; i++) {
-        pushBack(estado->jugadores, crearBots(i));
+    /*for (i = 1; i <= numPlayers; i++) {
+        if(i >numPlayers)esBot = true;
+        else esBot = false;
+        pushBack(estado->jugadores, crearBots(i,esBot));
     }*/
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
@@ -710,71 +713,77 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     }
 }
 
-Jugador* crearBots(int numplayers, int numeroBot) {
-    Jugador* bot = (Jugador*)malloc(sizeof(Jugador));
-    bot->esBot = true;
-    bot->jugador = numeroBot;
-    bot->cantidad = 7;
+Jugador* crearJugadores(int i, bool loEs) {
+    Jugador *jugador = (Jugador*)malloc(sizeof(Jugador));
+    jugador->cantidad = 7;
+    jugador->listaCartas = createList();
+    jugador->jugador = i;
+    jugador->esBot = loEs;
 }
 
-//void jugarCartaBot(Estado *estado, Jugador *jugador) {
-//    int valorJugada,i;
-//    List *jugadores = firstList(estado->jugadores);
-//    Carta *carta = firstList(jugador->listaCartas);
-//    List *aux = 
-//    Carta* ultimaCarta = firstList(estado->cartasJugadas);
-//
-//    while (jugador->listaCartas) {
-//        //aca falta reiniciar a valorJugada a su valor predefinido, para que todas las cartas se evaluen bajo el mismo juicio
-//        if (sePuedeJugar(estado, carta)) {
-//            carta->sePuede = true;
-//            switch (carta->especial) {//aca veo que tipo de carta estoy evaluando
-//            case -1:
-//                if (jugadores->prev->cantidad >= 5)
-//                    valorJugada = (jugadores->prev->cantidad - 5) + 1;
-//                if (jugadores->next->cantidad >= 5)
-//                    valorJugada = (jugadores->next->cantidad - 5) + 1;
-//                break;
-//            case 0:
-//                if (jugador->cantidad <= 3)
-//                    valorJugada += 2;
-//                for (i = 0; i <= cantidad; i++) {
-//                    if ((carta->especial != 1 && carta->especial != 0) && carta->color == ultimaCarta->color)
-//                        valorJugada--;
-//                }
-//                break;
-//            case 1:
-//                if (ultimaCarta->especial == 1)
-//                    valorJugada += 3;
-//                if (jugador->cantidad <= 3)
-//                    valorJugada += 2;
-//                if (jugador->cantidad > 3)
-//                    valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);
-//                break;
-//            case 2:
-//                if (jugadores->next->cantidad <= 3)
-//                    valorJugada += 3;
-//                break;
-//            }
-//            case 3:
-//
-//                break;
-//            case 4:
-//
-//                break;
-//        }
-//        else carta->sePuede = false;
-//
-//        //ya fuera del switch asignar el valor de valorJugada a algo para luego comparar cual es la jugada con mas valor
-//        carta = nextList(jugador->listaCartas);//avanzo en la mano del bot
-//    }
-//
-//    for (i = 0; i < jugador->cantidad; i++) {
-//        /*
-//        revisar el valor que tiene cada carta y tomar la que tiene mayor valor
-//        */
-//    }
-//
-//    //aca jugar la carta del bot
-//    return;
-//}
+/*void jugarCartaBot(Estado* estado, Jugador* jugador) {
+    int valorJugada,i;
+    List *jugadores = firstList(estado->jugadores);
+    Carta *carta = firstList(jugador->listaCartas);
+    Carta *auxCarta;
+    List *auxMano = jugador->listaCartas;
+    Carta* ultimaCarta = firstList(estado->cartasJugadas);
+
+    while (jugador->listaCartas) {
+        //aca falta reiniciar a valorJugada a su valor predefinido, para que todas las cartas se evaluen bajo el mismo juicio
+        if (sePuedeJugar(estado, carta)) {
+            carta->sePuede = true;
+            switch (carta->especial) {//aca veo que tipo de carta estoy evaluando
+            case -1:
+                if (jugadores->prev->cantidad >= 5)
+                    valorJugada = (jugadores->prev->cantidad - 5) + 1;
+                if (jugadores->next->cantidad >= 5)
+                    valorJugada = (jugadores->next->cantidad - 5) + 1;
+                break;
+            case 0:
+                if (jugador->cantidad <= 3)
+                    valorJugada += 2;
+                for (i = 0; i <= cantidad; i++) {
+                    carta = firstList(auxMano);
+                    if ((carta->especial != 1 && carta->especial != 0) && auxMano->color == ultimaCarta->color)
+                        valorJugada--;
+                    carta = nextList(auxMano);
+                }
+                break;
+            case 1:
+                if (ultimaCarta->especial == 1)
+                    valorJugada += 3;
+                if (jugador->cantidad <= 3)
+                    valorJugada += 2;
+                if (jugador->cantidad > 3)
+                    valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);
+                break;
+            case 2:
+                if (jugadores->next->cantidad <= 3)
+                    valorJugada += 3;
+                break;
+            }
+            case 3:
+
+                break;
+            case 4:
+
+                break;
+        }
+        else carta->sePuede = false;
+
+        carta->valorJugada = valorJugada;
+        pushFront(auxMano,carta);
+        carta = nextList(jugador->listaCartas);//avanzo en la mano del bot
+    }
+    
+    carta = firstList(auxMano);
+    auxCarta = carta->valorJugada;
+    for (i = 0; i < jugador->cantidad-1; i++) {
+      carta = nextList(auxMano);
+      if(carta->valorJugada > auxCarta->valorJugada)auxCarta = carta;
+    }
+
+    //aca jugar la carta del bot
+    return;
+}*/
