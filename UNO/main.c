@@ -66,7 +66,7 @@ void calcularPuntuacion(List *jugadores){           //Entregarle estado->jugador
             else cont += 10;
             carta = nextList(jugador->listaCartas);
         }
-        jugador->points = cont;
+        //jugador->points = cont;
         cont = 0;
         jugador = nextList(jugadores);
     }
@@ -139,7 +139,7 @@ void sacarCarta(List* mazo, List* listaCartas) {
     pushBack(listaCartas, carta);
 }
 
-void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta* carta, int x, int y)
+void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta* carta, int x, int y, bool esMazo)
 {
     int anchoCarta = 94;
     int largoCarta = 141;
@@ -162,7 +162,7 @@ void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta* carta, int x, int y)
         break;
 
     case 1:
-        if (carta->color == -1) {
+        if (esMazo) {
             al_draw_bitmap_region(bitCartas, 0.2 + anchoCarta * 9, 1 + largoCarta * 2, anchoCarta, largoCarta,
                 x - (anchoCarta / 2), y - (largoCarta / 2), 0);
         }
@@ -202,7 +202,7 @@ void dibujarCartas(Jugador* jugador, ALLEGRO_BITMAP* bitCartas)
     int x = 100, y = 600;
     while (carta)
     {
-        dibujarCarta(bitCartas, carta, x, y);
+        dibujarCarta(bitCartas, carta, x, y, true);
         x += 100;
         carta = nextList(jugador->listaCartas);
     }
@@ -223,16 +223,18 @@ int encontrarCarta(int mx, int my)
 bool sePuedeJugar(Estado* estado, Carta *carta) {
     Carta* cartaJugada = firstList(estado->cartasJugadas);
 
-    printf("color carta jugada = %i, especial = %i\n", carta->color, carta->especial);
+    //printf("color carta jugada = %i, especial = %i\n", carta->color, carta->especial);
 
-    if ((carta->especial == 0) || (carta->especial == 1))return true;
+    if ((carta->especial == 0) || (carta->especial == 1)) return true;
+
+    if (((cartaJugada->especial == 0) || (cartaJugada->especial == 1)) && (cartaJugada->num == -1)) return true;
 
     if (carta->especial == -1) {
-        if ((carta->num == cartaJugada->num) || (carta->color == cartaJugada->color))return true;
+        if ((carta->num == cartaJugada->num) || (carta->color == cartaJugada->color)) return true;
     }
 
     if (carta->especial > 1) {
-        if((carta->especial == cartaJugada->especial) || (carta->color == cartaJugada->color))return true;
+        if((carta->especial == cartaJugada->especial) || (carta->color == cartaJugada->color)) return true;
     }
 
     return false;
@@ -243,21 +245,21 @@ int asignarColor(ALLEGRO_EVENT_QUEUE* queue) {
     int mx = 0, my = 0, click, botonMouse;
     bool done = false;
     ALLEGRO_EVENT event;
-    ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
+    ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/fondo.png");
 
-    ALLEGRO_BITMAP* botonRueda = al_load_bitmap("Rojo.png");
+    ALLEGRO_BITMAP* botonRueda = al_load_bitmap("assets/Rojo.png");
     Boton* boton = crearBoton(botonRueda, 102, 98, 300, 250, 0);
     pushFront(botones, boton);
 
-    botonRueda = al_load_bitmap("Azul.png");
+    botonRueda = al_load_bitmap("assets/Azul.png");
     boton = crearBoton(botonRueda, 100, 96, 200, 350, 2);
     pushFront(botones, boton);
 
-    botonRueda = al_load_bitmap("Verde.png");
+    botonRueda = al_load_bitmap("assets/Verde.png");
     boton = crearBoton(botonRueda, 100, 98, 200, 250, 3);
     pushFront(botones, boton);
 
-    botonRueda = al_load_bitmap("Amarillo.png");
+    botonRueda = al_load_bitmap("assets/Amarillo.png");
     boton = crearBoton(botonRueda, 102, 96, 300, 350, 1);
     pushFront(botones, boton);
 
@@ -337,29 +339,29 @@ void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
     bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
-    ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
+    ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/fondo.png");
 
-    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("Left.png");
+    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("assets/Left.png");
     Boton *boton = crearBoton(botonPrueba, 51, 50, 400, 120, 0);
     pushFront(botones, boton);
 
-    botonPrueba = al_load_bitmap("Right.png");
+    botonPrueba = al_load_bitmap("assets/Right.png");
     boton = crearBoton(botonPrueba, 50, 47, 800, 120, 1);
     pushFront(botones, boton);
 
-    botonPrueba = al_load_bitmap("Left.png");
+    botonPrueba = al_load_bitmap("assets/Left.png");
     boton = crearBoton(botonPrueba, 51, 50, 400, 350, 2);
     pushFront(botones, boton);
 
-    botonPrueba = al_load_bitmap("Right.png");
+    botonPrueba = al_load_bitmap("assets/Right.png");
     boton = crearBoton(botonPrueba, 50, 47, 800, 350, 3);
     pushFront(botones, boton);
 
-    botonPrueba = al_load_bitmap("play.png");
+    botonPrueba = al_load_bitmap("assets/play.png");
     boton = crearBoton(botonPrueba, 200, 146, 222, 600, 4);
     pushFront(botones, boton);
 
-    botonPrueba = al_load_bitmap("close.png");
+    botonPrueba = al_load_bitmap("assets/close.png");
     boton = crearBoton(botonPrueba, 107, 49, 1000, 600, 5);
     pushFront(botones, boton);
 
@@ -452,23 +454,23 @@ int main()
     bool done = false;
     ALLEGRO_EVENT event;
 
-    ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
+    ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/fondo.png");
 
     List* botones = createList(); // lista con botones del menú principal
 
-    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("play.png");
+    ALLEGRO_BITMAP* botonPrueba = al_load_bitmap("assets/play.png");
     Boton *boton = crearBoton(botonPrueba, 200, 146, 625, 150, 0);
     pushFront(botones, boton);
 
-    botonPrueba = al_load_bitmap("Tutorial.png");
+    botonPrueba = al_load_bitmap("assets/Tutorial.png");
     boton = crearBoton(botonPrueba, 141, 51, 625, 290, 1);
     pushFront(botones, boton);
 
-    botonPrueba = al_load_bitmap("Config.png");
+    botonPrueba = al_load_bitmap("assets/Config.png");
     boton = crearBoton(botonPrueba, 138, 50, 625, 402, 2);
     pushFront(botones, boton);
 
-    botonPrueba = al_load_bitmap("Exit.png");
+    botonPrueba = al_load_bitmap("assets/Exit.png");
     boton = crearBoton(botonPrueba, 147, 50, 625, 562, 3);
     pushFront(botones, boton);
 
@@ -536,8 +538,8 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     bool done = false;
     ALLEGRO_EVENT event;
 
-    ALLEGRO_BITMAP* fondo = al_load_bitmap("fondo.png");
-    ALLEGRO_BITMAP* bitCartas = al_load_bitmap("cartas.png");
+    ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/fondo.png");
+    ALLEGRO_BITMAP* bitCartas = al_load_bitmap("assets/cartas.png");
 
     Jugador* jugador;
     jugador = (Jugador*)malloc(sizeof(Jugador));
@@ -547,11 +549,11 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     estado->jugadores = createList();
     estado->cartasJugadas = createList();
     estado->turnoJugador = 0;
-    estado->mazo = createList(); // generarMazo()
+    estado->mazo = createList();
     estado->pausa = 0;
 
     /*for (i = 2; i <= numPlayers; i++) {
-        pushBack(estado->jugadores, crearBots(dificultad, i));
+        pushBack(estado->jugadores, crearBots(i));
     }*/
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
@@ -620,7 +622,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     //pushBack(jugador->listaCartas, crearCarta(1, 1, -1));
 
     List* botones = createList();
-    pushBack(botones, crearBoton(al_load_bitmap("backside.png"), 94, 141, (1280 / 2) + 100, 720/2, 1));
+    pushBack(botones, crearBoton(al_load_bitmap("assets/backside.png"), 94, 141, (1280 / 2) + 100, 720/2, 1));
 
     while (1)
     {
@@ -692,7 +694,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
             cartaJugada = firstList(estado->cartasJugadas);
             if (cartaJugada)
             {
-                dibujarCarta(bitCartas, cartaJugada, (1280 / 2) - 200, 720 / 2);
+                dibujarCarta(bitCartas, cartaJugada, (1280 / 2) - 200, 720 / 2, false);
             }
 
             al_flip_display();
@@ -707,7 +709,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     }
 }
 
-Jugador* crearBots(int dificulta, int numplayers, int numeroBot) {
+Jugador* crearBots(int numplayers, int numeroBot) {
     Jugador* bot = (Jugador*)malloc(sizeof(Jugador));
     bot->esBot = true;
     bot->jugador = numeroBot;
