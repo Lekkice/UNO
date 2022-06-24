@@ -50,6 +50,28 @@ void eliminarBotones(List* botones) {
     }
 }
 
+void calcularPuntuacion(List *jugadores){           //Entregarle estado->jugadores
+    Jugador *jugador = firstList(jugadores);
+    Carta* carta = firstList(jugador->listaCartas);
+    int cont = 0;
+
+    while (jugador) {
+        while (carta) {
+            if (carta->especial == -1) {
+                cont += carta->num;
+            }
+            if (carta->especial == 0 || carta->especial == 1) {
+                cont += 20;
+            }
+            else cont += 10;
+            carta = nextList(jugador->listaCartas);
+        }
+        jugador->points = cont;
+        cont = 0;
+        jugador = nextList(jugadores);
+    }
+}
+
 Boton* crearBoton(ALLEGRO_BITMAP* imagen, int ancho, int largo, int posX, int posY, int id) {
     Boton* boton = (Boton*)malloc(sizeof(Boton));
     boton->imagen = imagen;
