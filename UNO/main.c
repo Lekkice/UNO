@@ -764,7 +764,7 @@ Jugador* crearJugadores(int i, bool loEs) {
     return jugador;
 }
 
-/*void jugarCartaBot(Estado* estado, Jugador* jugador) {
+void jugarCartaBot(Estado* estado, Jugador* jugador) {
     int valorJugada,i,cont;
     List *jugadores = firstList(estado->jugadores);
     Carta *carta = firstList(jugador->listaCartas);
@@ -795,11 +795,11 @@ Jugador* crearJugadores(int i, bool loEs) {
                 break;
             case 1:
                 /*if (ultimaCarta->especial == 1)
-                    valorJugada += 3;//comentar esto
+                    valorJugada += 3;*/
                 if (jugadores->next->cantidad <= 3)
                     valorJugada += 2;
                 /*if (jugador->cantidad > 3)
-                    valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);//
+                    valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);*/
                 break;
             case 2:
                 if (jugadores->next->cantidad <= 3)
@@ -840,4 +840,4 @@ Jugador* crearJugadores(int i, bool loEs) {
 
     jugarCarta(estado,jugador,cont,queue);
     return;
-}*/
+}
