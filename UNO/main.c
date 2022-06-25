@@ -201,9 +201,10 @@ Carta* crearCarta(int color, int num, int especial)
     return carta;
 }
 
-void sacarCarta(List* mazo, List* listaCartas) {
+void sacarCarta(List* mazo, Jugador *jugador) {
     Carta* carta = popFront(mazo);
-    pushBack(listaCartas, carta);
+    pushBack(jugador->listaCartas, carta);
+    jugador->cantidad--;
 }
 
 void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta* carta, int x, int y, bool esMazo)
@@ -388,6 +389,7 @@ void jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         
         pushFront(estado->cartasJugadas, carta);
         popCurrent(lista);
+        jugador->cantidad--;
     }
 
     if ((carta->especial == 1) || (carta->especial == 3)) {
@@ -702,14 +704,14 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     jugador = firstList(estado->jugadores);
     while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
         while (countList(jugador->listaCartas) < 7) {
-            sacarCarta(estado->mazo, jugador->listaCartas);
+            sacarCarta(estado->mazo, jugador);
         }
         jugador = nextList(estado->jugadores);
         if (jugador == NULL)break;
     }
     jugador = firstList(estado->jugadores);
     /*while (countList(jugador->listaCartas) < 7) {
-        sacarCarta(estado->mazo, jugador->listaCartas);
+        sacarCarta(estado->mazo, jugador);
     }*/
     
     //pushBack(jugador->listaCartas, crearCarta(0, 1, -1));
@@ -774,7 +776,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
                     switch (botonMouse)
                     {
                     case 1:
-                        sacarCarta(estado->mazo, jugador->listaCartas);
+                        sacarCarta(estado->mazo, jugador);
                         break;
                     }
                 }
