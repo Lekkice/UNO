@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "treemap.h"
 
 typedef struct {
     ALLEGRO_BITMAP* imagen;
@@ -37,6 +38,7 @@ typedef struct {
     List* mazo;
     int turnoJugador;
     int pausa;
+    TreeMap* puntuacion;
 }Estado;
 
 void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE*);
@@ -58,6 +60,18 @@ bool sePuedeJugar(Carta* cartaJugada, Carta* carta) {
     }
 
     return false;
+}
+
+void terminarTurno(Estado* estado)
+{
+    int numJugadores = countList(estado->jugadores);
+    if (estado->turnoJugador == numJugadores)
+    {
+        estado->turnoJugador = 0;
+        return;
+    }
+    estado->turnoJugador++;
+    estado->pausa = 1;
 }
 
 int encontrarPosibilidades(List* cartas, Carta* cartaJugada) {
@@ -96,8 +110,8 @@ void eliminarBotones(List* botones) {
     }
 }
 
-void calcularPuntuacion(List *jugadores){           //Entregarle estado->jugadores
-    Jugador *jugador = firstList(jugadores);
+void calcularPuntuacion(Estado *estado){           //Entregarle estado->jugadores
+    Jugador *jugador = firstList(estado->jugadores);
     Carta* carta = firstList(jugador->listaCartas);
     int cont = 0;
 
@@ -112,10 +126,17 @@ void calcularPuntuacion(List *jugadores){           //Entregarle estado->jugador
             else cont += 10;
             carta = nextList(jugador->listaCartas);
         }
-        //jugador->points = cont;
+        jugador->points = cont;
+        insertTreeMap(estado->puntuacion,cont,jugador);
         cont = 0;
-        jugador = nextList(jugadores);
+        jugador = nextList(estado->jugadores);
     }
+}
+
+int lower_than(void* key1, void* key2)
+{
+    if (strcmp(key1, key2) < 0) return 1;
+    return 0;
 }
 
 Boton* crearBoton(ALLEGRO_BITMAP* imagen, int ancho, int largo, int posX, int posY, int id) {
@@ -180,9 +201,10 @@ Carta* crearCarta(int color, int num, int especial)
     return carta;
 }
 
-void sacarCarta(List* mazo, List* listaCartas) {
+void sacarCarta(List* mazo, Jugador *jugador) {
     Carta* carta = popFront(mazo);
-    pushBack(listaCartas, carta);
+    pushBack(jugador->listaCartas, carta);
+    jugador->cantidad--;
 }
 
 void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta* carta, int x, int y, bool esMazo)
@@ -367,19 +389,37 @@ void jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         
         pushFront(estado->cartasJugadas, carta);
         popCurrent(lista);
+        jugador->cantidad--;
     }
-}
 
-void terminarTurno(Estado* estado)
-{
-    int numJugadores = countList(estado->jugadores);
-    if (estado->turnoJugador == numJugadores)
-    {
-        estado->turnoJugador = 0;
-        return;
+    if ((carta->especial == 1) || (carta->especial == 3)) {
+        int i;
+        if (carta->especial == 1) {
+            i = 4;
+        }
+        else {
+            i = 2;
+        }
+
+        terminarTurno(estado);
+
+        jugador = estado->jugadores; //asi deberia acceder al current no? no quiero hacer next y prev
+
+        for (int j = 0 ; j < i; j++) {
+            sacarCarta(estado->mazo,jugador);
+        }
+        terminarTurno(estado);
     }
-    estado->turnoJugador++;
-    estado->pausa = 1;
+
+    if ((countList(jugador->listaCartas)) == 0) {
+        calcularPuntuacion(estado);
+        jugador = firstTreeMap(estado->puntuacion);
+        for (int i = 0; i <= countList(estado->jugadores); i++) {
+            printf("%d° jugador %d puntos: %d", i, jugador->num,jugador->points);
+            jugador = nextTreeMap(estado->puntuacion);
+            if (jugador == NULL)break;
+        }
+    }
 }
 
 void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
@@ -583,7 +623,7 @@ int main()
 }
 
 void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
-    int i,j;
+    int i, j;
     int posArr;
     bool redraw = true;
     bool done = false;
@@ -603,6 +643,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     estado->turnoJugador = 0;
     estado->mazo = createList();
     estado->pausa = 0;
+    estado->puntuacion = createTreeMap(lower_than);
 
     for (i = 0; i < numPlayers; i++) {
         if(i == 1)esBot = false;
@@ -665,14 +706,14 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     jugador = firstList(estado->jugadores);
     while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
         while (countList(jugador->listaCartas) < 7) {
-            sacarCarta(estado->mazo, jugador->listaCartas);
+            sacarCarta(estado->mazo, jugador);
         }
         jugador = nextList(estado->jugadores);
-        //printf("hay %i jugadores", i+1);
+        if (jugador == NULL)break;
     }
     jugador = firstList(estado->jugadores);
     /*while (countList(jugador->listaCartas) < 7) {
-        sacarCarta(estado->mazo, jugador->listaCartas);
+        sacarCarta(estado->mazo, jugador);
     }*/
     
     //pushBack(jugador->listaCartas, crearCarta(0, 1, -1));
@@ -741,7 +782,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
                     switch (botonMouse)
                     {
                     case 1:
-                        sacarCarta(estado->mazo, jugador->listaCartas);
+                        sacarCarta(estado->mazo, jugador);
                         break;
                     }
                 }
