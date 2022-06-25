@@ -41,6 +41,22 @@ typedef struct {
 
 void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE*);
 
+bool sePuedeJugar(Carta* cartaJugada, Carta* carta) {
+    if ((carta->especial == 0) || (carta->especial == 1)) return true;
+
+    if (((cartaJugada->especial == 0) || (cartaJugada->especial == 1)) && (cartaJugada->num == -1)) return true;
+
+    if (carta->especial == -1) {
+        if ((carta->num == cartaJugada->num) || (carta->color == cartaJugada->color)) return true;
+    }
+
+    if (carta->especial > 1) {
+        if ((carta->especial == cartaJugada->especial) || (carta->color == cartaJugada->color)) return true;
+    }
+
+    return false;
+}
+
 int encontrarPosibilidades(List* cartas, Carta* cartaJugada) {
     Carta* carta = firstList(cartas);
     int num = 0;
@@ -226,43 +242,42 @@ void dibujarCartas(Jugador* jugador, ALLEGRO_BITMAP* bitCartas)
 {
     List* lista = jugador->listaCartas;
     Carta* carta = firstList(lista);
-    int x = 100, y = 600;
+    int count = countList(lista);
+    int dif;
+    int i = 0;
+    int x = 100, y = 525;
+    while (i < (count - 12)) {
+        dibujarCarta(bitCartas, carta, x, y, true);
+        x += 100;
+        i++;
+        carta = nextList(jugador->listaCartas);
+    }
+    x = 100, y = 600;
     while (carta)
     {
         dibujarCarta(bitCartas, carta, x, y, true);
         x += 100;
         carta = nextList(jugador->listaCartas);
+        i++;
     }
 }
 
-int encontrarCarta(int mx, int my)
+int encontrarCarta(int mx, int my, int cantidad)
 {
     int i;
-    for (i = 1; i <= 16; i++) // 100, 600; 94,141
+    int dif = cantidad - 12; // 455, 530
+    if (dif < 0) dif = 0;
+    for (i = 1; i <= 12; i++) // 100, 600; 94,141
     {
         if (((my > 530) && (my < 670)))
+            if ((mx > (100 * i - 94 / 2)) && (mx < (100 * i + 94 / 2)))
+                return dif + i;
+
+        if (((my > 455) && (my < 530)))
             if ((mx > (100 * i - 94 / 2)) && (mx < (100 * i + 94 / 2)))
                 return i;
     }
     return -1;
-}
-
-bool sePuedeJugar(Carta* cartaJugada, Carta *carta) {
-    //printf("color carta jugada = %i, especial = %i\n", carta->color, carta->especial);
-
-    if ((carta->especial == 0) || (carta->especial == 1)) return true;
-
-    if (((cartaJugada->especial == 0) || (cartaJugada->especial == 1)) && (cartaJugada->num == -1)) return true;
-
-    if (carta->especial == -1) {
-        if ((carta->num == cartaJugada->num) || (carta->color == cartaJugada->color)) return true;
-    }
-
-    if (carta->especial > 1) {
-        if((carta->especial == cartaJugada->especial) || (carta->color == cartaJugada->color)) return true;
-    }
-
-    return false;
 }
 
 int asignarColor(ALLEGRO_EVENT_QUEUE* queue) {
@@ -700,7 +715,8 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
                     }
                 }
                 */
-                cartaMouse = encontrarCarta(mx, my);
+                cartaMouse = encontrarCarta(mx, my, countList(jugador->listaCartas));
+                printf("cartaMouse = %i\n", cartaMouse);
                 if (cartaMouse != -1 && cartaMouse <= countList(jugador->listaCartas))
                 {
                     jugarCarta(estado, jugador, cartaMouse, queue);
@@ -713,7 +729,6 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
                     switch (botonMouse)
                     {
                     case 1:
-                        printf("sacar carta\n");
                         sacarCarta(estado->mazo, jugador->listaCartas);
                         break;
                     }
@@ -759,7 +774,7 @@ Jugador* crearJugadores(int i, bool loEs) {
     Jugador *jugador = (Jugador*)malloc(sizeof(Jugador));
     jugador->cantidad = 7;
     jugador->listaCartas = createList();
-    jugador->jugador = i;
+    jugador->num = i;
     jugador->esBot = loEs;
 }
 
