@@ -605,9 +605,10 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     estado->pausa = 0;
 
     for (i = 0; i < numPlayers; i++) {
-        if(i == 0)esBot = false;
+        if(i == 1)esBot = false;
         else esBot = true;
         pushBack(estado->jugadores, crearJugadores(i,esBot));
+        //printf("hay %i jugadores", i);
     }
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
@@ -660,12 +661,14 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     carta = popCurrent(estado->mazo);
     pushBack(estado->cartasJugadas, carta);
 
+    i = 0;
     jugador = firstList(estado->jugadores);
     while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
         while (countList(jugador->listaCartas) < 7) {
             sacarCarta(estado->mazo, jugador->listaCartas);
         }
         jugador = nextList(estado->jugadores);
+        //printf("hay %i jugadores", i+1);
     }
     jugador = firstList(estado->jugadores);
     /*while (countList(jugador->listaCartas) < 7) {
@@ -710,6 +713,9 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
             {
                 if (jugador->esBot) {
                     jugarCartaBot(estado, jugador, queue);
+                    terminarTurno(estado);
+                    printf("jugo el bot");
+                    continue;
                 }
                 else {
                     int numCartas = countList(jugador->listaCartas);
@@ -719,6 +725,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
                         jugarCarta(estado, jugador, cartaMouse, queue);
                         terminarTurno(estado);
                     }
+                    printf("jugo el jugador");
                 }
                 /*
                 cartaMouse = encontrarCarta(mx, my);
@@ -861,15 +868,17 @@ void jugarCartaBot(Estado* estado, Jugador* jugador, ALLEGRO_EVENT_QUEUE* queue)
     
     carta = firstList(auxMano);
     auxCarta = carta;
-    cont = 0;
+    cont = -1;
     for (i = 0; i < jugador->cantidad-1; i++) {
       carta = nextList(auxMano);
-      if(carta->valorJugada > auxCarta->valorJugada){
-        cont = i;
-        auxCarta = carta;
+      if(carta->sePuede){
+        if (carta->valorJugada > auxCarta->valorJugada) {
+          cont = i;
+          auxCarta = carta;
+        }
       }
     }
 
-    jugarCarta(estado,jugador,cont,queue);
-    return;
+    if (cont != -1) jugarCarta(estado, jugador, cont, queue);
+    else sacarCarta(estado->mazo, jugador->listaCartas);
 }
