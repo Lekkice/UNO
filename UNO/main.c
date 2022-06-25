@@ -712,7 +712,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
                     jugarCartaBot(estado, jugador, queue);
                 }
                 else {
-                    cartaMouse = encontrarCarta(mx, my);
+                    cartaMouse = encontrarCarta(mx, my, countList(jugador->listaCartas));
                     if (cartaMouse != -1 && cartaMouse <= countList(jugador->listaCartas))
                     {
                         jugarCarta(estado, jugador, cartaMouse, queue);
