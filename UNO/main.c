@@ -40,6 +40,9 @@ typedef struct {
 }Estado;
 
 void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE*);
+bool sePuedeJugar(Carta*, Carta*);
+void jugarCartaBot(Estado*, Jugador*, ALLEGRO_EVENT_QUEUE*);
+Jugador* crearJugadores(int, bool);
 
 int encontrarPosibilidades(List* cartas, Carta* cartaJugada) {
     Carta* carta = firstList(cartas);
@@ -366,7 +369,7 @@ void terminarTurno(Estado* estado)
 
 void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
     List* botones = createList();
-    int mx = 0, my = 0, click = 0, botonMouse, numPlayers = 0, dif = 0;
+    int mx = 0, my = 0, click = 0, botonMouse, numPlayers = 1, dif = 1;
     bool redraw = true;
     bool done = false;
     ALLEGRO_EVENT event;
@@ -427,11 +430,13 @@ void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
             switch (botonMouse) {
             case 0:
                 numPlayers--;
-                //printf("%i , %i", numPlayers, dif);
+                printf("%i\n", numPlayers);
+                if (numPlayers < 1)numPlayers++;
                 break;
             case 1:
                 numPlayers++;
-                //printf("%i , %i", numPlayers, dif);
+                printf("%i\n", numPlayers);
+                if (numPlayers > 4)numPlayers--;
                 break;
             case 2:
                 dif--;
@@ -585,9 +590,9 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     estado->pausa = 0;
 
     for (i = 1; i <= numPlayers; i++) {
-        if(i >numPlayers)esBot = false;
+        if(i > 1)esBot = false;
         else esBot = true;
-        pushBack(estado->jugadores, crearBots(i,esBot));
+        pushBack(estado->jugadores, crearJugadores(i,esBot));
     }
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
@@ -840,7 +845,7 @@ void jugarCartaBot(Estado* estado, Jugador* jugador, ALLEGRO_EVENT_QUEUE* queue)
     }
     
     carta = firstList(auxMano);
-    auxCarta = carta->valorJugada;
+    auxCarta = carta;
     cont = 0;
     for (i = 0; i < jugador->cantidad-1; i++) {
       carta = nextList(auxMano);
