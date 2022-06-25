@@ -604,8 +604,8 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     estado->mazo = createList();
     estado->pausa = 0;
 
-    for (i = 1; i <= numPlayers; i++) {
-        if(i > 1)esBot = false;
+    for (i = 0; i < numPlayers; i++) {
+        if(i == 0)esBot = false;
         else esBot = true;
         pushBack(estado->jugadores, crearJugadores(i,esBot));
     }
@@ -667,7 +667,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
         }
         jugador = nextList(estado->jugadores);
     }
-    
+    jugador = firstList(estado->jugadores);
     /*while (countList(jugador->listaCartas) < 7) {
         sacarCarta(estado->mazo, jugador->listaCartas);
     }*/
@@ -775,12 +775,12 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     }
 }
 
-Jugador* crearJugadores(int i, bool loEs) {
+Jugador* crearJugadores(int num, bool esBot) {
     Jugador *jugador = (Jugador*)malloc(sizeof(Jugador));
     jugador->cantidad = 7;
     jugador->listaCartas = createList();
-    jugador->num = i;
-    jugador->esBot = loEs;
+    jugador->num = num;
+    jugador->esBot = esBot;
     return jugador;
 }
 
