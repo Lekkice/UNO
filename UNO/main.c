@@ -427,22 +427,22 @@ void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
             switch (botonMouse) {
             case 0:
                 numPlayers--;
-                printf("%i , %i", numPlayers, dif);
+                //printf("%i , %i", numPlayers, dif);
                 break;
             case 1:
                 numPlayers++;
-                printf("%i , %i", numPlayers, dif);
+                //printf("%i , %i", numPlayers, dif);
                 break;
             case 2:
                 dif--;
-                printf("%i , %i", numPlayers, dif);
+                //printf("%i , %i", numPlayers, dif);
                 break;
             case 3:
                 dif++;
-                printf("%i , %i", numPlayers, dif);
+                //printf("%i , %i", numPlayers, dif);
                 break;
             case 4:
-                menuEmpezarJuego(queue);
+                menuEmpezarJuego(queue,numPlayers);
                 break;
             case 5:
                 eliminarBotones(botones);
@@ -562,7 +562,7 @@ int main()
     return 0;
 }
 
-void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
+void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     int i,j;
     int posArr;
     bool redraw = true;
@@ -584,11 +584,11 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     estado->mazo = createList();
     estado->pausa = 0;
 
-    /*for (i = 1; i <= numPlayers; i++) {
-        if(i >numPlayers)esBot = true;
-        else esBot = false;
+    for (i = 1; i <= numPlayers; i++) {
+        if(i >numPlayers)esBot = false;
+        else esBot = true;
         pushBack(estado->jugadores, crearBots(i,esBot));
-    }*/
+    }
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
@@ -640,17 +640,17 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
     carta = popCurrent(estado->mazo);
     pushBack(estado->cartasJugadas, carta);
 
-    /*jugador = firstList(estado->jugadores);
+    jugador = firstList(estado->jugadores);
     while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
         while (countList(jugador->listaCartas) < 7) {
             sacarCarta(estado->mazo, jugador->listaCartas);
         }
         jugador = nextList(estado->jugadores);
-    }*/
-    
-    while (countList(jugador->listaCartas) < 7) {
-        sacarCarta(estado->mazo, jugador->listaCartas);
     }
+    
+    /*while (countList(jugador->listaCartas) < 7) {
+        sacarCarta(estado->mazo, jugador->listaCartas);
+    }*/
     
     //pushBack(jugador->listaCartas, crearCarta(0, 1, -1));
     //pushBack(jugador->listaCartas, crearCarta(1, 1, -1));
@@ -688,8 +688,8 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
             //revisa si el mouse está sobre un botón o carta
             if (!estado->pausa)
             {
-                /*if (jugador->esBot) {
-                    jugarCartaBot(estado,jugador)
+                if (jugador->esBot) {
+                    jugarCartaBot(estado, jugador, queue);
                 }
                 else {
                     cartaMouse = encontrarCarta(mx, my);
@@ -699,14 +699,14 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue) {
                         terminarTurno(estado);
                     }
                 }
-                */
+                /*
                 cartaMouse = encontrarCarta(mx, my);
                 if (cartaMouse != -1 && cartaMouse <= countList(jugador->listaCartas))
                 {
                     jugarCarta(estado, jugador, cartaMouse, queue);
                     terminarTurno(estado);
                 }
-
+                */
                 botonMouse = encontrarBoton(botones, mx, my);
                 if (botonMouse != -1)
                 {
@@ -759,14 +759,15 @@ Jugador* crearJugadores(int i, bool loEs) {
     Jugador *jugador = (Jugador*)malloc(sizeof(Jugador));
     jugador->cantidad = 7;
     jugador->listaCartas = createList();
-    jugador->jugador = i;
+    jugador->num = i;
     jugador->esBot = loEs;
     return jugador;
 }
 
-void jugarCartaBot(Estado* estado, Jugador* jugador) {
-    int valorJugada,i,cont;
-    List *jugadores = firstList(estado->jugadores);
+void jugarCartaBot(Estado* estado, Jugador* jugador, ALLEGRO_EVENT_QUEUE* queue) {
+    int valorJugada,i,cont,auxnumero;
+    List* ordenJugadores = estado->jugadores;
+    Jugador* auxJugador;
     Carta *carta = firstList(jugador->listaCartas);
     Carta *auxCarta;
     List *auxMano = jugador->listaCartas;
@@ -774,21 +775,24 @@ void jugarCartaBot(Estado* estado, Jugador* jugador) {
 
     while (jugador->listaCartas) {
         valorJugada = 0;
+        ordenJugadores = estado->jugadores;
+
         if (sePuedeJugar(estado, carta)) {
             carta->sePuede = true;
             switch (carta->especial) {//aca veo que tipo de carta estoy evaluando
             case -1:
-                if (jugadores->prev->cantidad >= 5)
-                    valorJugada = (jugadores->prev->cantidad - 5) + 1;
-                if (jugadores->next->cantidad >= 5)
-                    valorJugada = (jugadores->next->cantidad - 5) + 1;
+                if (jugador->cantidad >= 5)
+                    valorJugada = (jugador->cantidad - 5) + 1;
+                auxJugador = nextList(ordenJugadores);
+                if (auxJugador->cantidad >= 5)
+                    valorJugada = (auxJugador->cantidad - 5) + 1;
                 break;
             case 0:
                 if (jugador->cantidad <= 3)
                     valorJugada += 2;
-                for (i = 0; i <= cantidad; i++) {
-                    carta = firstList(auxMano);
-                    if ((carta->especial != 1 && carta->especial != 0) && auxMano->color == ultimaCarta->color)
+                for (i = 0; i <= jugador->cantidad; i++) {
+                    auxCarta = firstList(auxMano);
+                    if ((carta->especial != 1 && carta->especial != 0) && auxCarta->color == ultimaCarta->color)
                         valorJugada--;
                     carta = nextList(auxMano);
                 }
@@ -796,28 +800,37 @@ void jugarCartaBot(Estado* estado, Jugador* jugador) {
             case 1:
                 /*if (ultimaCarta->especial == 1)
                     valorJugada += 3;*/
-                if (jugadores->next->cantidad <= 3)
+                auxJugador = nextList(ordenJugadores);
+                if (auxJugador->cantidad <= 3)
                     valorJugada += 2;
                 /*if (jugador->cantidad > 3)
                     valorJugada = valorJugada - ((jugador->cantidad - 3) * -1);*/
                 break;
             case 2:
-                if (jugadores->next->cantidad <= 3)
-                    valorJugada ++;
-                if(jugadores->prev->cantidad <= 3)
-                    valorJugada ++;
+                auxJugador = nextList(ordenJugadores);
+                if (auxJugador->cantidad <= 3)
+                    valorJugada++;
+                prevList(ordenJugadores);
+                auxJugador = prevList(ordenJugadores);
+                if (auxJugador->cantidad <= 3)
+                    valorJugada++;
                 break;
-            }
+
             case 3:
-                if (jugadores->next->cantidad <= 3)
+                auxJugador = nextList(ordenJugadores);
+                if (auxJugador->cantidad <= 3)
                     valorJugada += 3;
                 break;
             case 4:
-                if (jugadores->next->cantidad <= 3)
-                    valorJugada ++;
-                if(jugadores->prev->cantidad >= 3)
-                    valorJugada ++;
+                auxJugador = nextList(ordenJugadores);
+                if (auxJugador->cantidad <= 3)
+                    valorJugada++;
+                prevList(ordenJugadores);
+                auxJugador = prevList(ordenJugadores);
+                if (auxJugador->cantidad >= 3)
+                    valorJugada++;
                 break;
+            }
         }
         else carta->sePuede = false;
 
@@ -831,8 +844,7 @@ void jugarCartaBot(Estado* estado, Jugador* jugador) {
     cont = 0;
     for (i = 0; i < jugador->cantidad-1; i++) {
       carta = nextList(auxMano);
-      if(carta->valorJugada > auxCarta->valorJugada)
-      {
+      if(carta->valorJugada > auxCarta->valorJugada){
         cont = i;
         auxCarta = carta;
       }
