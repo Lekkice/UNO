@@ -204,7 +204,7 @@ Carta* crearCarta(int color, int num, int especial)
 void sacarCarta(Estado *estado, Jugador *jugador) {
     Carta* carta = popFront(estado->mazo);
     pushBack(jugador->listaCartas, carta);
-    jugador->cantidad--;
+    jugador->cantidad++;
     terminarTurno(estado);
 }
 
@@ -401,6 +401,10 @@ void jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
             jugador = nextTreeMap(estado->puntuacion);
             if (jugador == NULL)break;
         }
+    }
+
+    if (carta->especial == 4) {
+        //te pones a llorar por que no tengo idea de como hacerlo
     }
 
     if (carta->especial == 2) {  //andamos payasos, complicadisimo (espero que funcione, funciona pls, te pago) 
@@ -712,10 +716,11 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     jugador = firstList(estado->jugadores);
     while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
         while (countList(jugador->listaCartas) < 7) {
-            sacarCarta(estado, jugador);
+            Carta* carta = popFront(estado->mazo);
+            pushBack(jugador->listaCartas, carta);
+            jugador->cantidad++;
         }
         jugador = nextList(estado->jugadores);
-        if (jugador == NULL)break;
     }
     jugador = firstList(estado->jugadores);
     /*while (countList(jugador->listaCartas) < 7) {
