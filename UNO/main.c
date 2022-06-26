@@ -851,24 +851,25 @@ void jugarCartaBot(Estado* estado, Jugador* jugador, ALLEGRO_EVENT_QUEUE* queue)
         valorJugada = 0;
         ordenJugadores = estado->jugadores;
 
-        if (sePuedeJugar(estado, carta)) {
+        if (sePuedeJugar(ultimaCarta, carta)) {
             carta->sePuede = true;
             switch (carta->especial) {//aca veo que tipo de carta estoy evaluando
             case -1:
                 if (jugador->cantidad >= 5)
                     valorJugada = (jugador->cantidad - 5) + 1;
                 auxJugador = nextList(ordenJugadores);
+                if (auxJugador == NULL) auxJugador = firstList(ordenJugadores);
                 if (auxJugador->cantidad >= 5)
                     valorJugada = (auxJugador->cantidad - 5) + 1;
                 break;
             case 0:
                 if (jugador->cantidad <= 3)
                     valorJugada += 2;
+                auxCarta = firstList(auxMano);
                 for (i = 0; i <= jugador->cantidad; i++) {
-                    auxCarta = firstList(auxMano);
                     if ((carta->especial != 1 && carta->especial != 0) && auxCarta->color == ultimaCarta->color)
                         valorJugada--;
-                    carta = nextList(auxMano);
+                    auxCarta = nextList(auxMano);
                 }
                 break;
             case 1:
@@ -882,25 +883,30 @@ void jugarCartaBot(Estado* estado, Jugador* jugador, ALLEGRO_EVENT_QUEUE* queue)
                 break;
             case 2:
                 auxJugador = nextList(ordenJugadores);
+                if (auxJugador == NULL) auxJugador = firstList(ordenJugadores);
                 if (auxJugador->cantidad <= 3)
                     valorJugada++;
                 prevList(ordenJugadores);
                 auxJugador = prevList(ordenJugadores);
+                if (auxJugador == NULL) auxJugador = lastList(ordenJugadores);
                 if (auxJugador->cantidad <= 3)
                     valorJugada++;
                 break;
 
             case 3:
                 auxJugador = nextList(ordenJugadores);
+                if (auxJugador == NULL) auxJugador = firstList(ordenJugadores);
                 if (auxJugador->cantidad <= 3)
                     valorJugada += 3;
                 break;
             case 4:
                 auxJugador = nextList(ordenJugadores);
+                if (auxJugador == NULL) auxJugador = firstList(ordenJugadores);
                 if (auxJugador->cantidad <= 3)
                     valorJugada++;
                 prevList(ordenJugadores);
                 auxJugador = prevList(ordenJugadores);
+                if (auxJugador == NULL) auxJugador = lastList(ordenJugadores);
                 if (auxJugador->cantidad >= 3)
                     valorJugada++;
                 break;
