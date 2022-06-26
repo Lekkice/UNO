@@ -31,6 +31,7 @@ typedef struct {
     int num; // 0 al num máx de jugadores
     bool esBot;
     int points;  //puntuacion
+    bool uno;
 }Jugador;
 
 typedef struct {
@@ -410,7 +411,13 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         return false;
     }
 
-    if ((countList(jugador->listaCartas)) == 0) {
+    if (countList(jugador->listaCartas) == 1) {
+        if (1/*reemplazar con una condicion de apretar un boton dentro de un plazo de tiempo*/) {
+            jugador->uno = true;
+        }
+    }
+
+    if (((countList(jugador->listaCartas)) == 0) && (jugador->uno == true)) {
         calcularPuntuacion(estado);
         jugador = firstTreeMap(estado->puntuacion);
         for (int i = 0; i <= estado->numJugadores; i++) {
@@ -420,8 +427,30 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         }
     }
 
+    int i = 0;
+
     if (carta->especial == 4) {
-        //te pones a llorar por que no tengo idea de como hacerlo
+        List* aux = createList();
+        while (countList(estado->jugadores) != 0) {
+            prevList(estado->jugadores);
+            if (prevList(aux) == NULL) {
+                while (countList(estado->jugadores) != 0) {
+                    Jugador* auxJug = popCurrent(estado->jugadores);
+                }
+            }
+            Jugador* auxJug = popFront(estado->jugadores);
+            pushBack(aux, auxJug);
+            i++;
+        }
+
+        firstList(aux);
+        firstList(estado->jugadores);
+
+        for (i; i != 0; i--) {
+            jugador = popFront(aux);
+            pushBack(estado->jugadores, jugador);
+            nextList(estado->jugadores);
+        }
     }
 
     if (carta->especial == 2) {  //andamos payasos, complicadisimo (espero que funcione, funciona pls, te pago) 
@@ -734,7 +763,9 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
         while (countList(jugador->listaCartas) < 7) {
             Carta* carta = popFront(estado->mazo);
             pushBack(jugador->listaCartas, carta);
+            printf("%i %i %i\n", carta->color, carta->especial, carta->num);
             jugador->cantidad++;
+            jugador->uno = false;
         }
     }
 
