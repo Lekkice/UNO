@@ -1,6 +1,7 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_ttf.h>
 #include <stdbool.h>
 #include "list.h"
 #include <stdio.h>
@@ -180,15 +181,17 @@ void dibujarBotones(List* botones)
     }
 }
 
-void generarMazo(Carta* arregloCartas[], List* mazo) {
+void generarMazo(Carta arregloCartas[], List* mazo) {
     int i = 0;
     int j = 0;
     srand(time(0));
     while (i < 104) {
         j = rand() % 50;
-        if (arregloCartas[j]->cont != 0) {
-            arregloCartas[j]->cont--;
-            pushBack(mazo, arregloCartas[j]);
+        if (arregloCartas[j].cont != 0) {
+            arregloCartas[j].cont--;
+            Carta* carta = (Carta*)malloc(sizeof(Carta));
+            *carta = arregloCartas[j];
+            pushBack(mazo, carta);
         }
         i = countList(mazo);
     }
@@ -204,7 +207,7 @@ Carta* crearCarta(int color, int num, int especial)
 void sacarCarta(Estado *estado, Jugador *jugador) {
     Carta* carta = popFront(estado->mazo);
     pushBack(jugador->listaCartas, carta);
-    jugador->cantidad--;
+    jugador->cantidad++;
     terminarTurno(estado);
 }
 
@@ -403,6 +406,10 @@ void jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         }
     }
 
+    if (carta->especial == 4) {
+        //te pones a llorar por que no tengo idea de como hacerlo
+    }
+
     if (carta->especial == 2) {  //andamos payasos, complicadisimo (espero que funcione, funciona pls, te pago) 
         terminarTurno(estado);  
         terminarTurno(estado);
@@ -538,11 +545,12 @@ int main()
     al_init();
     al_init_image_addon();
     al_install_mouse();
-    al_init_primitives_addon();
+    al_init_font_addon();
+    al_init_ttf_addon();
 
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
     ALLEGRO_DISPLAY* disp = al_create_display(1280, 720);
-    ALLEGRO_FONT* font = al_create_builtin_font();
+    ALLEGRO_FONT* font = al_load_ttf_font("assets/edo.ttf", 150, 0);
 
     al_register_event_source(queue, al_get_display_event_source(disp));
     al_register_event_source(queue, al_get_mouse_event_source());
@@ -612,6 +620,8 @@ int main()
 
             al_draw_bitmap(fondo, 0, 0, 0);
 
+            al_draw_text(font, al_map_rgb(0, 0, 0), 150, 300, 0, "TEXTO");
+
             dibujarBotones(botones);
 
             al_flip_display();
@@ -660,22 +670,21 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
-
-    Carta* carta;        //crear arreglo con todas las cartas
+        //crear arreglo con todas las cartas
     posArr = 0;
-    Carta* arregloCartas[50];
+    Carta arregloCartas[50];
     for (i = 0; i < 4; i++) {
         for (j = 1; j < 10; j++) {
-            carta = (Carta*)malloc(sizeof(Carta));
-            carta->color = i;
-            carta->num = j;
-            if (carta->num == 0) {
-                carta->cont = 1;
+            Carta carta;
+            carta.color = i;
+            carta.num = j;
+            if (carta.num == 0) {
+                carta.cont = 1;
             }
             else {
-                carta->cont = 2;
+                carta.cont = 2;
             }
-            carta->especial = -1;
+            carta.especial = -1;
             arregloCartas[posArr] = carta;
             posArr++;
             //printf(" %d %d %d %d \n", carta->num, carta->color, carta->especial,carta->cont);
@@ -683,39 +692,40 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     }
     for (i = 0; i < 4; i++) {
         for (j = 2; j < 5; j++) {
-            carta = (Carta*)malloc(sizeof(Carta));
-            carta->num = NULL;
-            carta->color = i;
-            carta->especial = j;
-            carta->cont = 2;
+            Carta carta;
+            carta.num = NULL;
+            carta.color = i;
+            carta.especial = j;
+            carta.cont = 2;
             arregloCartas[posArr] = carta;
             posArr++;
             //printf(" %d %d %d %d \n", carta->num, carta->color, carta->especial,carta->cont);
         }
     }
     for (i = 0; i < 2; i++) {
-        carta = (Carta*)malloc(sizeof(Carta));
-        carta->num = NULL;
-        carta->color = -1;
-        carta->especial = i;
-        carta->cont = 4;
+        Carta carta;
+        carta.num = NULL;
+        carta.color = -1;
+        carta.especial = i;
+        carta.cont = 4;
         arregloCartas[posArr] = carta;
         posArr++;
         //printf(" %d %d %d %d\n", carta->num, carta->color, carta->especial,carta->cont);
     }
 
     generarMazo(arregloCartas,estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona) .si funciona.
-    carta = popCurrent(estado->mazo);
+    Carta* carta = popCurrent(estado->mazo);
     pushBack(estado->cartasJugadas, carta);
 
     i = 0;
     jugador = firstList(estado->jugadores);
     while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
         while (countList(jugador->listaCartas) < 7) {
-            sacarCarta(estado, jugador);
+            Carta* carta = popFront(estado->mazo);
+            pushBack(jugador->listaCartas, carta);
+            jugador->cantidad++;
         }
         jugador = nextList(estado->jugadores);
-        if (jugador == NULL)break;
     }
     jugador = firstList(estado->jugadores);
     /*while (countList(jugador->listaCartas) < 7) {
