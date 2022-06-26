@@ -3,10 +3,12 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_ttf.h>
 #include <stdbool.h>
-#include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
+#include "list.h"
 #include "treemap.h"
 
 typedef struct {
@@ -217,10 +219,11 @@ Carta* crearCarta(int color, int num, int especial)
     return carta;
 }
 
-void sacarCarta(Estado *estado, Jugador *jugador) {
+void sacarCarta(Estado *estado, Jugador *jugador, ALLEGRO_SAMPLE* sonido) {
     Carta* carta = popFront(estado->mazo);
     pushBack(jugador->listaCartas, carta);
     jugador->cantidad++;
+    al_play_sample(sonido, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
     printf("saca carta\n");
 }
 
@@ -383,7 +386,7 @@ int asignarColor(ALLEGRO_EVENT_QUEUE* queue) {
     }
 }
 
-bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QUEUE* queue) // si es bot, queue = NULL
+bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_SAMPLE* sonidoSacarCarta) // si es bot, queue = NULL
 {
     List* lista = jugador->listaCartas;
     Carta* carta = firstList(lista);
@@ -471,7 +474,7 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         jugador = estado->jugadores[estado->jugadorActual];
 
         for (int j = 0 ; j < i; j++) {
-            sacarCarta(estado, jugador);
+            sacarCarta(estado, jugador, sonidoSacarCarta);
         }
         terminarTurno(estado);
 
@@ -562,6 +565,8 @@ void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
                 //printf("%i , %i", numPlayers, dif);
                 break;
             case 4:
+                eliminarBotones(botones);
+                al_destroy_bitmap(fondo);
                 menuEmpezarJuego(queue,numPlayers, font);
                 break;
             case 5:
@@ -593,6 +598,10 @@ int main()
     al_install_mouse();
     al_init_font_addon();
     al_init_ttf_addon();
+    
+    al_install_audio();
+    al_init_acodec_addon();
+    al_reserve_samples(4);
 
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
     ALLEGRO_DISPLAY* disp = al_create_display(1280, 720);
@@ -601,10 +610,13 @@ int main()
     al_register_event_source(queue, al_get_mouse_event_source());
 
     bool redraw = true;
-    bool done = false;
     ALLEGRO_EVENT event;
 
     ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/fondo.png");
+
+    ALLEGRO_SAMPLE* musica = al_load_audio_stream("assets/musica.opus", 2, 2048);
+    al_set_audio_stream_playmode(musica, ALLEGRO_PLAYMODE_LOOP);
+    al_attach_audio_stream_to_mixer(musica, al_get_default_mixer());
 
     List* botones = createList(); // lista con botones del menú principal
 
@@ -627,7 +639,6 @@ int main()
     int botonMouse, click, mx, my;
     while (1)
     {
-
         botonMouse = -1;
         click = 0;
 
@@ -648,15 +659,16 @@ int main()
             break;
         }
 
-        if (done) break;
-
         if (click && al_is_event_queue_empty(queue))
         {
             botonMouse = encontrarBoton(botones, mx, my);
 
-            if (botonMouse == 0) menuCrearPartida(queue);
+            if (botonMouse == 0) {
+                eliminarBotones(botones);
+                al_destroy_bitmap(fondo);
+                menuCrearPartida(queue);
+            }
             else if (botonMouse == 3) break;
-            //código que maneja los casos usando el id de los botones
         }
 
         if (redraw && al_is_event_queue_empty(queue))
@@ -690,6 +702,9 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
     ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/fondo.png");
     ALLEGRO_BITMAP* bitCartas = al_load_bitmap("assets/cartas.png");
     ALLEGRO_BITMAP* bitmapBS = al_load_bitmap("assets/backside.png");
+
+    ALLEGRO_SAMPLE* sonidoJugarCarta = al_load_sample("assets/jugar carta.wav");
+    ALLEGRO_SAMPLE* sonidoSacarCarta = al_load_sample("assets/sacar carta.wav");
 
     Jugador* jugador;
     jugador = (Jugador**)malloc(sizeof(Jugador*));
@@ -805,10 +820,11 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
                 if (jugador->esBot) {
                     int numCarta = encontrarMejorCarta(estado, jugador->listaCartas);
                     if (numCarta != -1) {
-                        jugarCarta(estado, jugador, numCarta + 1, queue);
+                        jugarCarta(estado, jugador, numCarta + 1, queue, sonidoSacarCarta);
+                        al_play_sample(sonidoJugarCarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     }
                     else { 
-                        sacarCarta(estado, jugador);
+                        sacarCarta(estado, jugador, sonidoSacarCarta);
                         terminarTurno(estado);
                     }
                     printf("jugo el bot %i con la carta %i\n", jugador->num, numCarta);
@@ -820,8 +836,9 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
                     cartaMouse = encontrarCarta(mx, my, numCartas);
                     if (cartaMouse != -1 && cartaMouse <= numCartas)
                     {
-                        if (jugarCarta(estado, jugador, cartaMouse, queue)) {
+                        if (jugarCarta(estado, jugador, cartaMouse, queue, sonidoSacarCarta)) {
                             printf("jugo el jugador %i con la carta %i\n", jugador->num, cartaMouse);
+                            al_play_sample(sonidoJugarCarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         }
                         
                     }
@@ -833,7 +850,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
                     {
                     case 1:
                         if (!jugador->esBot) {
-                            sacarCarta(estado, jugador);
+                            sacarCarta(estado, jugador, sonidoSacarCarta);
                             terminarTurno(estado);
                         }
                         break;
