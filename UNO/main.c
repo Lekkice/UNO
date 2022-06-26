@@ -689,6 +689,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
 
     ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/fondo.png");
     ALLEGRO_BITMAP* bitCartas = al_load_bitmap("assets/cartas.png");
+    ALLEGRO_BITMAP* bitmapBS = al_load_bitmap("assets/backside.png");
 
     Jugador* jugador;
     jugador = (Jugador**)malloc(sizeof(Jugador*));
@@ -770,7 +771,6 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
     }
 
     List* botones = createList();
-    ALLEGRO_BITMAP* bitmapBS = al_load_bitmap("assets/backside.png");
     pushBack(botones, crearBoton(bitmapBS, 94, 141, (1280 / 2) + 100, 720/2, 1));
 
 
