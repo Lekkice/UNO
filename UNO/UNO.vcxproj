@@ -147,9 +147,11 @@
   <ItemGroup>
     <ClCompile Include="list.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="treemap.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="list.h" />
+    <ClInclude Include="treemap.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\Downloads\mazo.png" />

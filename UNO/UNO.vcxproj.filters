@@ -24,9 +24,15 @@
     <ClCompile Include="list.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="treemap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="treemap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
