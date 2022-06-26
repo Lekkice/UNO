@@ -662,9 +662,9 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     estado->puntuacion = createTreeMap(lower_than);
 
     for (i = 0; i < 4; i++) {
-        if(i <= numPlayers)esBot = false;
+        if(i < numPlayers)esBot = false;
         else esBot = true;
-        pushBack(estado->jugadores, crearJugadores(i,esBot));
+        pushBack(estado->jugadores, crearJugadores(i+1,esBot));
         //printf("hay %i jugadores", i);
     }
 
@@ -719,12 +719,15 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
 
     i = 0;
     jugador = firstList(estado->jugadores);
-    while (jugador) {                              //darle a cada jugador sus 7 cartas iniciales
+    while (jugador) {         //darle a cada jugador sus 7 cartas iniciales
+        printf("viene el jugardor %i\n\n", i + 1);
         while (countList(jugador->listaCartas) < 7) {
             Carta* carta = popFront(estado->mazo);
             pushBack(jugador->listaCartas, carta);
+            printf("%i %i %i\n", carta->color, carta->especial, carta->num);
             jugador->cantidad++;
         }
+        i++;
         jugador = nextList(estado->jugadores);
     }
     jugador = firstList(estado->jugadores);
