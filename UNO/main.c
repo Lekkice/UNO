@@ -401,8 +401,30 @@ void jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         }
     }
 
+    int i = 0;
+
     if (carta->especial == 4) {
-        //te pones a llorar por que no tengo idea de como hacerlo
+        List* aux = createList();
+        while (countList(estado->jugadores) != 0) {
+            prevList(estado->jugadores);
+            if (prevList(aux) == NULL) {
+                while (countList(estado->jugadores) != 0) {
+                    Jugador* auxJug = popCurrent(estado->jugadores);
+                }
+            }
+            Jugador* auxJug = popFront(estado->jugadores);
+            pushBack(aux, auxJug);
+            i++;
+        }
+
+        firstList(aux);
+        firstList(estado->jugadores);
+
+        for (i; i != 0; i--) {
+            jugador = popFront(aux);
+            pushBack(estado->jugadores, jugador);
+            nextList(estado->jugadores);
+        }
     }
 
     if (carta->especial == 2) {  //andamos payasos, complicadisimo (espero que funcione, funciona pls, te pago) 
@@ -655,7 +677,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     estado->puntuacion = createTreeMap(lower_than);
 
     for (i = 0; i < 4; i++) {
-        if(i <= numPlayers)esBot = false;
+        if(i == 0)esBot = false;
         else esBot = true;
         pushBack(estado->jugadores, crearJugadores(i,esBot));
         //printf("hay %i jugadores", i);
