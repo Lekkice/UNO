@@ -31,6 +31,7 @@ typedef struct {
     int num; // 0 al num máx de jugadores
     bool esBot;
     int points;  //puntuacion
+    bool uno;
 }Jugador;
 
 typedef struct {
@@ -391,7 +392,13 @@ void jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         jugador->cantidad--;
     }
 
-    if ((countList(jugador->listaCartas)) == 0) {
+    if (countList(jugador->listaCartas) == 1) {
+        if (1/*reemplazar con una condicion de apretar un boton dentro de un plazo de tiempo*/) {
+            jugador->uno = true;
+        }
+    }
+
+    if (((countList(jugador->listaCartas)) == 0) && (jugador->uno == true)) {
         calcularPuntuacion(estado);
         jugador = firstTreeMap(estado->puntuacion);
         for (int i = 0; i <= countList(estado->jugadores); i++) {
@@ -739,6 +746,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
             Carta* carta = popFront(estado->mazo);
             pushBack(jugador->listaCartas, carta);
             jugador->cantidad++;
+            jugador->uno = false;
         }
         jugador = nextList(estado->jugadores);
     }
