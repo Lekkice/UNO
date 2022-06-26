@@ -430,27 +430,17 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
     int i = 0;
 
     if (carta->especial == 4) {
-        List* aux = createList();
-        while (countList(estado->jugadores) != 0) {
-            prevList(estado->jugadores);
-            if (prevList(aux) == NULL) {
-                while (countList(estado->jugadores) != 0) {
-                    Jugador* auxJug = popCurrent(estado->jugadores);
-                }
-            }
-            Jugador* auxJug = popFront(estado->jugadores);
-            pushBack(aux, auxJug);
-            i++;
+        Jugador* aux;
+        int i = 0;
+        int j = estado->numJugadores;
+
+        for (i; i < j; i++) {
+            aux = estado->jugadores[i];
+            estado->jugadores[i] = estado->jugadores[j];
+            estado->jugadores[j] = aux;
+            j--;
         }
 
-        firstList(aux);
-        firstList(estado->jugadores);
-
-        for (i; i != 0; i--) {
-            jugador = popFront(aux);
-            pushBack(estado->jugadores, jugador);
-            nextList(estado->jugadores);
-        }
     }
 
     if (carta->especial == 2) {  //andamos payasos, complicadisimo (espero que funcione, funciona pls, te pago) 
