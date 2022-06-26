@@ -661,8 +661,8 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers) {
     estado->pausa = 0;
     estado->puntuacion = createTreeMap(lower_than);
 
-    for (i = 0; i < numPlayers; i++) {
-        if(i == 1)esBot = false;
+    for (i = 0; i < 4; i++) {
+        if(i <= numPlayers)esBot = false;
         else esBot = true;
         pushBack(estado->jugadores, crearJugadores(i,esBot));
         //printf("hay %i jugadores", i);
@@ -925,7 +925,7 @@ void jugarCartaBot(Estado* estado, Jugador* jugador, ALLEGRO_EVENT_QUEUE* queue)
         else carta->sePuede = false;
 
         carta->valorJugada = valorJugada;
-        pushFront(auxMano,carta);
+        pushBack(auxMano,carta);
         carta = nextList(jugador->listaCartas);//avanzo en la mano del bot
     }
     
