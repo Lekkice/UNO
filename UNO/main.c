@@ -634,13 +634,6 @@ void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
     boton = crearBoton(bitRight, 50, 47, x * 3, 120, 1);
     pushFront(botones, boton);
 
-
-    boton = crearBoton(bitLeft, 51, 50, x, 350, 2);
-    pushFront(botones, boton);
-    boton = crearBoton(bitRight, 50, 47, x * 3, 350, 3);
-    pushFront(botones, boton);
-
-    
     boton = crearBoton(bitPlay, 200, 146, 222, 600, 4);
     pushFront(botones, boton);
 
@@ -684,15 +677,7 @@ void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
             case 1:
                 if (numPlayers < 5) numPlayers++;
                 printf("%i\n", numPlayers);
-                break;
-            case 2:
-                dif--;
-                //printf("%i , %i", numPlayers, dif);
-                break;
-            case 3:
-                dif++;
-                //printf("%i , %i", numPlayers, dif);
-                break;
+                break
             case 4:
                 al_destroy_bitmap(fondo);
                 al_destroy_font(fontMenu);
