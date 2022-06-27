@@ -44,6 +44,7 @@ typedef struct {
     List* mazo;
     int pausa;
     TreeMap* puntuacion;
+    int direccion;
 }Estado;
 
 void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE*, int, ALLEGRO_FONT*);
@@ -81,9 +82,9 @@ bool sePuedeJugar(Carta* cartaJugada, Carta* carta) {
 void terminarTurno(Estado* estado)
 {
     estado->pausa = 1;
-    estado->jugadorActual++;
+    estado->jugadorActual += estado->direccion;
     if (estado->jugadorActual >= estado->numJugadores) estado->jugadorActual = 0;
-    if (estado->jugadorActual < 0) estado->jugadorActual = estado->numJugadores;
+    if (estado->jugadorActual < 0) estado->jugadorActual = estado->numJugadores-1;
     printf("turno de jugador %i\n", estado->jugadorActual);
 }
 
@@ -484,17 +485,7 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
     int i = 0;
 
     if (carta->especial == 4) {
-        //Jugador* aux = NULL;
-        //int i = 0;
-        //int j = estado->numJugadores;
-
-        //for (i; i < j; i++) {
-        //    aux = estado->jugadores[i];
-        //    estado->jugadores[i] = estado->jugadores[j];
-        //    estado->jugadores[j] = aux;
-        //    j--;
-        //}
-
+        estado->direccion = estado->direccion * -1;
     }
 
     if (carta->especial == 2) {  //andamos payasos, complicadisimo (espero que funcione, funciona pls, te pago) 
@@ -771,13 +762,12 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
     estado->pausa = 0;
     estado->puntuacion = createTreeMap(lower_than);
     estado->jugadorActual = 0;
+    estado->direccion = 1;
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
         //printf(" %d %d %d %d\n", carta->num, carta->color, carta->especial,carta->cont);
-    }
         //printf(" %d %d %d %d\n", carta->num, carta->color, carta->especial,carta->cont);
-    }
 
     generarMazo(estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona) .si funciona.
     Carta* carta = popCurrent(estado->mazo);
