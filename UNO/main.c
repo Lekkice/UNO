@@ -91,9 +91,9 @@ void dibujarPuntuacion(Estado* estado, ALLEGRO_FONT* font) {
     Pair *puntuacion = firstTreeMap(estado->puntuacion);
     for (int i = 0; i < numJugadores; i++) {
         Jugador* jugador = puntuacion->value;
-        int x = 600, y = 100 + (i * 20);
+        int x = 400, y = 100 + (i * 30);
         int count = countList(jugador->listaCartas);
-        al_draw_textf(font, al_map_rgb(10, 10, 10), x, y, 0, " %i°     Jugador %i        puntos: %i", i+1 , jugador->num, *jugador->points);
+        al_draw_textf(font, al_map_rgb(10, 10, 10), x, y, 0, " %i°     Jugador %i        puntos: %i", i+1 , jugador->num+1, *jugador->points);
         puntuacion = nextTreeMap(estado->puntuacion);
     }
 }
@@ -101,6 +101,7 @@ void dibujarPuntuacion(Estado* estado, ALLEGRO_FONT* font) {
 void menuPuntuacion(ALLEGRO_EVENT_QUEUE* queue,ALLEGRO_FONT* font,Estado *estado) {
     while (1) {
         ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/MenuUno.png");
+        ALLEGRO_FONT* font= al_load_ttf_font("assets/edo.ttf", 25, 0);
         al_flip_display();
         dibujarPuntuacion(estado, font);
         al_flip_display();
@@ -577,6 +578,9 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
     }
 
     if (carta->especial == 4) {
+        if (estado->numJugadores == 2) {
+            terminarTurno(estado);
+        }
         estado->direccion = estado->direccion * -1;
     }
 
