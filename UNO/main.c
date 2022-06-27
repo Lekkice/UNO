@@ -196,9 +196,52 @@ void dibujarBotones(List* botones)
     }
 }
 
-void generarMazo(Carta arregloCartas[], List* mazo) {
+void generarMazo(List* mazo) {
     int i = 0;
     int j = 0;
+    int posArr = 0;
+    Carta arregloCartas[50];
+
+    for (i = 0; i < 4; i++) {
+        for (j = 1; j < 10; j++) {
+            Carta carta;
+            carta.color = i;
+            carta.num = j;
+            if (carta.num == 0) {
+                carta.cont = 1;
+            }
+            else {
+                carta.cont = 2;
+            }
+            carta.especial = -1;
+            arregloCartas[posArr] = carta;
+            posArr++;
+            //printf(" %d %d %d %d \n", carta->num, carta->color, carta->especial,carta->cont);
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        for (j = 2; j < 5; j++) {
+            Carta carta;
+            carta.num = NULL;
+            carta.color = i;
+            carta.especial = j;
+            carta.cont = 2;
+            arregloCartas[posArr] = carta;
+            posArr++;
+            //printf(" %d %d %d %d \n", carta->num, carta->color, carta->especial,carta->cont);
+        }
+    }
+    for (i = 0; i < 2; i++) {
+        Carta carta;
+        carta.num = NULL;
+        carta.color = -1;
+        carta.especial = i;
+        carta.cont = 4;
+        arregloCartas[posArr] = carta;
+        posArr++;
+        //printf(" %d %d %d %d\n", carta->num, carta->color, carta->especial,carta->cont);
+    }
+
     srand(time(0));
     while (i < 104) {
         j = rand() % 50;
@@ -414,6 +457,10 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         return false;
     }
 
+    if (countList(estado->mazo) == 0) {
+        generarMazo(estado->mazo);
+    }
+
     if (countList(jugador->listaCartas) == 1) {
         if (1/*reemplazar con una condicion de apretar un boton dentro de un plazo de tiempo*/) {
             jugador->uno = true;
@@ -433,7 +480,7 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
     int i = 0;
 
     if (carta->especial == 4) {
-        Jugador* aux;
+        Jugador* aux = (Jugador *) malloc(sizeof(Jugador));
         int i = 0;
         int j = estado->numJugadores;
 
@@ -717,50 +764,8 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
-        //crear arreglo con todas las cartas
-    posArr = 0;
-    Carta arregloCartas[50];
-    for (i = 0; i < 4; i++) {
-        for (j = 1; j < 10; j++) {
-            Carta carta;
-            carta.color = i;
-            carta.num = j;
-            if (carta.num == 0) {
-                carta.cont = 1;
-            }
-            else {
-                carta.cont = 2;
-            }
-            carta.especial = -1;
-            arregloCartas[posArr] = carta;
-            posArr++;
-            //printf(" %d %d %d %d \n", carta->num, carta->color, carta->especial,carta->cont);
-        }
-    }
-    for (i = 0; i < 4; i++) {
-        for (j = 2; j < 5; j++) {
-            Carta carta;
-            carta.num = NULL;
-            carta.color = i;
-            carta.especial = j;
-            carta.cont = 2;
-            arregloCartas[posArr] = carta;
-            posArr++;
-            //printf(" %d %d %d %d \n", carta->num, carta->color, carta->especial,carta->cont);
-        }
-    }
-    for (i = 0; i < 2; i++) {
-        Carta carta;
-        carta.num = NULL;
-        carta.color = -1;
-        carta.especial = i;
-        carta.cont = 4;
-        arregloCartas[posArr] = carta;
-        posArr++;
-        //printf(" %d %d %d %d\n", carta->num, carta->color, carta->especial,carta->cont);
-    }
 
-    generarMazo(arregloCartas,estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona) .si funciona.
+    generarMazo(estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona) .si funciona.
     Carta* carta = popCurrent(estado->mazo);
     pushBack(estado->cartasJugadas, carta);
 
