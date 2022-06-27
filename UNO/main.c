@@ -88,20 +88,23 @@ void dibujarEstado(Estado* estado, ALLEGRO_FONT* font) {
 
 void dibujarPuntuacion(Estado* estado, ALLEGRO_FONT* font) {
     int numJugadores = estado->numJugadores;
-    Jugador* jugador = NULL;
-    int puntuacion = firstTreeMap(estado->puntuacion);
+    Pair *puntuacion = firstTreeMap(estado->puntuacion);
     for (int i = 0; i < numJugadores; i++) {
-        jugador = estado->jugadores[i];
+        Jugador* jugador = puntuacion->value;
         int x = 600, y = 100 + (i * 20);
         int count = countList(jugador->listaCartas);
-        al_draw_textf(font, al_map_rgb(10, 10, 10), x, y, 0, " %i° Jugador %i puntos: %i", i + 1, jugador, puntuacion);
+        al_draw_textf(font, al_map_rgb(10, 10, 10), x, y, 0, " %i°     Jugador %i        puntos: %i", i+1 , jugador->num, *jugador->points);
         puntuacion = nextTreeMap(estado->puntuacion);
     }
 }
 
 void menuPuntuacion(ALLEGRO_EVENT_QUEUE* queue,ALLEGRO_FONT* font,Estado *estado) {
-    ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/MenuUno.png");
-    dibujarPuntuacion(estado, font);
+    while (1) {
+        ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/MenuUno.png");
+        al_flip_display();
+        dibujarPuntuacion(estado, font);
+        al_flip_display();
+    }
 }
 
 bool sePuedeJugar(Carta* cartaJugada, Carta* carta) {
@@ -217,19 +220,25 @@ void calcularPuntuacion(Estado *estado){
     for (int i = 0; i < estado->numJugadores; i++) {
         Jugador* jugador = estado->jugadores[i];
         Carta* carta = firstList(jugador->listaCartas);
-        int cont = 0;
+        int *cont = 0;
 
         while (carta) {
             if (carta->especial == -1) {
                 cont += carta->num;
             }
             if (carta->especial == 0 || carta->especial == 1) {
-                cont += 20;
+                cont += 50;
             }
-            else cont += 10;
+            else cont += 20;
             carta = nextList(jugador->listaCartas);
         }
+
+        //printf("\n %d \n", cont);
+
         *(jugador->points) = cont;
+
+        //printf("\n %d \n", *jugador->points);
+
         void* key = jugador->points;
         void* value = jugador;
         insertTreeMap(estado->puntuacion, key, value);
@@ -820,8 +829,7 @@ int main()
 }
 
 void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* font) {
-    int i, j;
-    int posArr;
+    int i;
     bool done = false;
 
     ALLEGRO_EVENT event;
