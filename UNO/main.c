@@ -86,6 +86,24 @@ void dibujarEstado(Estado* estado, ALLEGRO_FONT* font) {
     }
 }
 
+void dibujarPuntuacion(Estado* estado, ALLEGRO_FONT* font) {
+    int numJugadores = estado->numJugadores;
+    Jugador* jugador = NULL;
+    int puntuacion = firstTreeMap(estado->puntuacion);
+    for (int i = 0; i < numJugadores; i++) {
+        jugador = estado->jugadores[i];
+        int x = 600, y = 100 + (i * 20);
+        int count = countList(jugador->listaCartas);
+        al_draw_textf(font, al_map_rgb(10, 10, 10), x, y, 0, " %i° Jugador %i puntos: %i", i + 1, jugador, puntuacion);
+        puntuacion = nextTreeMap(estado->puntuacion);
+    }
+}
+
+void menuPuntuacion(ALLEGRO_EVENT_QUEUE* queue,ALLEGRO_FONT* font,Estado *estado) {
+    ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/MenuUno.png");
+    dibujarPuntuacion(estado, font);
+}
+
 bool sePuedeJugar(Carta* cartaJugada, Carta* carta) {
     if ((carta->especial == 0) || (carta->especial == 1)) return true;
 
@@ -500,7 +518,7 @@ int asignarColor(ALLEGRO_EVENT_QUEUE* queue) {
     }
 }
 
-bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_SAMPLE* sonidoSacarCarta) // si es bot, queue = NULL
+bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_SAMPLE* sonidoSacarCarta,ALLEGRO_FONT *font) // si es bot, queue = NULL
 {
     List* lista = jugador->listaCartas;
     Carta* carta = firstList(lista);
@@ -540,12 +558,13 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
 
     if (((countList(jugador->listaCartas)) == 0) && (jugador->uno == true)) {
         calcularPuntuacion(estado);
-        jugador = firstTreeMap(estado->puntuacion);
+        /*jugador = firstTreeMap(estado->puntuacion);
         for (int i = 0; i <= estado->numJugadores; i++) {
             //printf("%d° jugador %d puntos: %d", i, jugador->num, jugador->points);
             jugador = nextTreeMap(estado->puntuacion);
             if (jugador == NULL) break;
-        }
+        }*/
+        menuPuntuacion(queue, font, estado);
     }
 
     if (carta->especial == 4) {
@@ -896,7 +915,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
                         terminarTurno(estado);
                         continue;
                     }
-                    jugarCarta(estado, jugador, numCarta + 1, queue, sonidoSacarCarta);
+                    jugarCarta(estado, jugador, numCarta + 1, queue, sonidoSacarCarta,font);
                     al_play_sample(sonidoJugarCarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     printf("jugo el bot %i con la carta %i\n", jugador->num, numCarta);
                     
@@ -907,7 +926,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
                     cartaMouse = encontrarCarta(mx, my, numCartas);
                     if (cartaMouse != -1 && cartaMouse <= numCartas)
                     {
-                        if (jugarCarta(estado, jugador, cartaMouse, queue, sonidoSacarCarta)) {
+                        if (jugarCarta(estado, jugador, cartaMouse, queue, sonidoSacarCarta,font)) {
                             printf("jugo el jugador %i con la carta %i\n", jugador->num, cartaMouse);
                             al_play_sample(sonidoJugarCarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         }
