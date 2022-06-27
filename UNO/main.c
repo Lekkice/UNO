@@ -87,13 +87,56 @@ void terminarTurno(Estado* estado)
     printf("turno de jugador %i\n", estado->jugadorActual);
 }
 
+int elegirMejorColor(List* listaCartas) {
+    int max = 0;
+    int num = 0;
+    int color = 0;
+    for (int i = 0; i < 4; i++) {
+        Carta cartaAux;
+        cartaAux.color = i;
+        cartaAux.especial = 2;
+
+        Carta* carta = firstList(listaCartas);
+        num = 0;
+        while (carta) {
+            if (sePuedeJugar(&cartaAux, carta)) num++;
+            carta = nextList(listaCartas);
+        }
+        if (num > max) {
+            max = num;
+            color = i;
+        }
+    }
+    num = max;
+    printf("bot elige color %i\n", color);
+    return color;
+}
+
 // calcula las cartas que se pueden jugar el siguiente turno asumiendo que el color y el número no cambian
 int calcularPosibilidades(List* cartas, Carta* cartaJugada) {
-    Carta* carta = firstList(cartas);
     int num = 0;
-    while (carta) {
-        if (sePuedeJugar(cartaJugada, carta)) num++;
-        carta = nextList(cartas);
+    if ((cartaJugada->especial == 0) || (cartaJugada->especial == 1)) {
+        int max = 0;
+        for (int i = 0; i < 4; i++) {
+            Carta cartaAux;
+            cartaAux.color = i;
+            cartaAux.especial = 2;
+
+            Carta* carta = firstList(cartas);
+            while (carta) {
+                if (sePuedeJugar(&cartaAux, carta)) num++;
+                carta = nextList(cartas);
+            }
+            if (num > max) max = num;
+        }
+        num = max;
+    }
+    else {
+        Carta* carta = firstList(cartas);
+        while (carta) {
+            if (sePuedeJugar(cartaJugada, carta)) num++;
+            carta = nextList(cartas);
+        }
     }
     return num - 1;
 }
@@ -449,7 +492,7 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
             if ((carta->especial == 0) || (carta->especial == 1)) carta->color = asignarColor(queue);
         }
         else {
-            // elegirMejorColor(); o algo así
+            if ((carta->especial == 0) || (carta->especial == 1)) carta->color = elegirMejorColor(jugador->listaCartas);
         }
         
         pushFront(estado->cartasJugadas, carta);
@@ -774,13 +817,12 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
 
     int mx = 0, my = 0, click = 0, cartaMouse, botonMouse;
     Carta* cartaJugada = NULL;
-        //printf(" %d %d %d %d\n", carta->num, carta->color, carta->especial,carta->cont);
-    }
-        //printf(" %d %d %d %d\n", carta->num, carta->color, carta->especial,carta->cont);
-    }
 
     generarMazo(estado->mazo);         //funcion para crear el mazo (hay que revisar si funciona) .si funciona.
     Carta* carta = popCurrent(estado->mazo);
+    if ((carta->especial == 0) || (carta->especial == 1)) {
+        carta->color = 0;
+    }
     pushBack(estado->cartasJugadas, carta);
 
     for (int i = 0; i < estado->numJugadores; i++) {
@@ -826,14 +868,13 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
             {
                 if (jugador->esBot) {
                     int numCarta = encontrarMejorCarta(estado, jugador->listaCartas);
-                    if (numCarta != -1) {
-                        jugarCarta(estado, jugador, numCarta + 1, queue, sonidoSacarCarta);
-                        al_play_sample(sonidoJugarCarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
-                    }
-                    else {
+                    if (numCarta == -1) {
                         sacarCarta(estado, jugador, sonidoSacarCarta);
                         terminarTurno(estado);
+                        continue;
                     }
+                    jugarCarta(estado, jugador, numCarta + 1, queue, sonidoSacarCarta);
+                    al_play_sample(sonidoJugarCarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     printf("jugo el bot %i con la carta %i\n", jugador->num, numCarta);
                     
                     continue;
