@@ -97,7 +97,7 @@
     <Allegro_AddonFont>true</Allegro_AddonFont>
     <Allegro_AddonColor>false</Allegro_AddonColor>
     <Allegro_AddonVideo>false</Allegro_AddonVideo>
-    <Allegro_LibraryType>DynamicRelease</Allegro_LibraryType>
+    <Allegro_LibraryType>StaticMonolithRelease</Allegro_LibraryType>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
