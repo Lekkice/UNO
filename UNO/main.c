@@ -90,20 +90,27 @@ void dibujarPuntuacion(Estado* estado, ALLEGRO_FONT* font) {
     Pair *puntuacion = firstTreeMap(estado->puntuacion);
     for (int i = 0; i < numJugadores; i++) {
         Jugador* jugador = puntuacion->value;
-        int x = 400, y = 100 + (i * 30);
+        int x = 250, y = 100 + (i * 70);
         int count = countList(jugador->listaCartas);
-        al_draw_textf(font, al_map_rgb(10, 10, 10), x, y, 0, " %i°     Jugador %i        puntos: %i", i+1 , jugador->num+1, *jugador->points);
+        al_draw_textf(font, al_map_rgb(10, 10, 10), x - 50, y, 0, " %i°", i+1);
+        al_draw_textf(font, al_map_rgb(10, 10, 10), x + 100, y, 0, "Jugador %i", jugador->num + 1);
+        al_draw_textf(font, al_map_rgb(10, 10, 10), x + 400, y, 0, "puntos: %i", *jugador->points);
         puntuacion = nextTreeMap(estado->puntuacion);
     }
 }
 
-void menuPuntuacion(ALLEGRO_EVENT_QUEUE* queue,ALLEGRO_FONT* font,Estado *estado) {
+void menuPuntuacion(ALLEGRO_EVENT_QUEUE* queue,Estado *estado) {
+    ALLEGRO_EVENT event;
+    ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/MenuUno.png");
+    ALLEGRO_FONT* font = al_load_ttf_font("assets/edo.ttf", 50, 0);
+
+    al_draw_bitmap(fondo, 0, 0, 0);
+    dibujarPuntuacion(estado, font);
+    al_flip_display();
+
     while (1) {
-        ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/MenuUno.png");
-        ALLEGRO_FONT* font= al_load_ttf_font("assets/edo.ttf", 25, 0);
-        al_flip_display();
-        dibujarPuntuacion(estado, font);
-        al_flip_display();
+        al_wait_for_event(queue, &event);
+        if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) exit(0);
     }
 }
 
@@ -247,7 +254,9 @@ void calcularPuntuacion(Estado *estado){
 
 int lower_than(void* key1, void* key2)
 {
-    if (strcmp(key1, key2) < 0) return 1;
+    int a = *(int*) key1;
+    int b = *(int*) key2;
+    if (a < b) return 1;
     return 0;
 }
 
@@ -563,7 +572,7 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
 
     if (((countList(jugador->listaCartas)) == 0) && (jugador->uno == true)) {
         calcularPuntuacion(estado);
-        menuPuntuacion(queue, font, estado);
+        menuPuntuacion(queue, estado);
     }
 
     if (carta->especial == 4) {
