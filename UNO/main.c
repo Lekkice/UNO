@@ -45,6 +45,7 @@ typedef struct {
     int pausa;
     TreeMap* puntuacion;
     int direccion;
+    float sonido;
 }Estado;
 
 void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE*, int, ALLEGRO_FONT*);
@@ -706,6 +707,83 @@ void menuCrearPartida(ALLEGRO_EVENT_QUEUE* queue) {
 
             al_flip_display();
 
+        }
+
+    }
+}
+
+float menuConfiguraciones(ALLEGRO_EVENT_QUEUE* queue){
+    int mx = 0, my = 0, click = 0, botonMouse = -1;
+    float volumen = 1;
+    ALLEGRO_BITMAP* fondo = al_load_bitmap("assets/fondo.png");
+    ALLEGRO_FONT* font = al_load_ttf_font("assets/edo.ttf", 15, 0);
+    ALLEGRO_FONT* fontMenu = al_load_ttf_font("assets/edo.ttf", 30, 0);
+
+    ALLEGRO_BITMAP* bitLeft = al_load_bitmap("assets/Left.png");
+    ALLEGRO_BITMAP* bitRight = al_load_bitmap("assets/Right.png");
+    ALLEGRO_BITMAP* bitClose = al_load_bitmap("assets/close.png");
+
+    Boton* boton = crearBoton(bitLeft, 51, 50, x, 120, 0);
+    pushFront(botones, boton);
+    boton = crearBoton(bitRight, 50, 47, x * 3, 120, 1);
+    pushFront(botones, boton);
+
+    boton = crearBoton(bitClose, 107, 49, 222, 600, 2);
+    pushFront(botones, boton);
+    
+    while (1)
+    {
+        botonMouse = -1;
+        click = 0;
+
+        al_wait_for_event(queue, &event);
+
+        switch (event.type)
+        {
+        case ALLEGRO_EVENT_DISPLAY_CLOSE:
+            exit(0);
+            break;
+        case ALLEGRO_EVENT_MOUSE_AXES:
+            mx = event.mouse.x;
+            my = event.mouse.y;
+            //printf("x = %i, y = %i\n", mx, my);
+            break;
+        case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+            click = 1;
+            break;
+        }
+
+        if (click && al_is_event_queue_empty(queue))
+        {
+            botonMouse = encontrarBoton(botones, mx, my);
+
+            switch (botonMouse) {
+            case 0:
+                volumen = volumen - 0.1;
+                if (volumen > 0) volumen + 0.1;
+                break;
+            case 1:
+                volumen = volumen + 0.1;
+                if (volumen > 1) volumen - 0.1;
+                break;
+            case 3:
+                al_destroy_bitmap(fondo);
+                al_destroy_font(fontMenu);
+                eliminarBotones(botones);
+
+                return volumen;
+            }
+        }
+
+        if (al_is_event_queue_empty(queue))
+        {
+            al_clear_to_color(al_map_rgb(255, 255, 255));
+
+            al_draw_bitmap(fondo, 0, 0, 0);
+
+            dibujarBotones(botones);
+
+            al_flip_display();
         }
 
     }
