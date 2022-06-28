@@ -226,7 +226,7 @@ void calcularPuntuacion(Estado *estado){
     for (int i = 0; i < estado->numJugadores; i++) {
         Jugador* jugador = estado->jugadores[i];
         Carta* carta = firstList(jugador->listaCartas);
-        int *cont = 0;
+        int cont = 0;
 
         while (carta) {
             if (carta->especial == -1) {
@@ -239,11 +239,7 @@ void calcularPuntuacion(Estado *estado){
             carta = nextList(jugador->listaCartas);
         }
 
-        //printf("\n %d \n", cont);
-
         *(jugador->points) = cont;
-
-        //printf("\n %d \n", *jugador->points);
 
         void* key = jugador->points;
         void* value = jugador;
@@ -331,7 +327,7 @@ void generarMazo(List* mazo) {
     for (i = 0; i < 4; i++) {
         for (j = 2; j < 5; j++) {
             Carta carta;
-            carta.num = NULL;
+            carta.num = 0;
             carta.color = i;
             carta.especial = j;
             carta.cont = 2;
@@ -341,7 +337,7 @@ void generarMazo(List* mazo) {
     }
     for (i = 0; i < 2; i++) {
         Carta carta;
-        carta.num = NULL;
+        carta.num = 0;
         carta.color = -1;
         carta.especial = i;
         carta.cont = 4;
