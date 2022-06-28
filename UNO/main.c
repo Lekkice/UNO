@@ -48,6 +48,7 @@ typedef struct {
 
 void menuPuntuacion(ALLEGRO_EVENT_QUEUE*, Estado*);
 void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE*, int, ALLEGRO_FONT*, Estado*);
+bool sePuedeJugar(Carta*, Carta*);
 
 // genera un mazo utilizando un arreglo con todas las cartas que se recorre de forma aleatoria
 void generarMazo(List* mazo) {
@@ -110,7 +111,7 @@ void generarMazo(List* mazo) {
     }
 }
 
-// inicializa y retorna un valor tipo Jugador*
+// inicializa y retorna un jugador
 Jugador* crearJugador(int num, bool esBot) {
     Jugador* jugador = (Jugador*)malloc(sizeof(Jugador));
     if (jugador == NULL) {
@@ -131,6 +132,7 @@ Jugador* crearJugador(int num, bool esBot) {
     return jugador;
 }
 
+// inicializa y retorna un botón
 Boton* crearBoton(ALLEGRO_BITMAP* imagen, int ancho, int largo, int posX, int posY, int id) {
     Boton* boton = (Boton*)malloc(sizeof(Boton));
     if (boton == NULL) {
@@ -146,6 +148,7 @@ Boton* crearBoton(ALLEGRO_BITMAP* imagen, int ancho, int largo, int posX, int po
     return boton;
 }
 
+// elimina los botones en la lista y libera la memoria
 void eliminarBotones(List* botones) {
     Boton* boton = popCurrent(botones);
     while (boton) {
@@ -156,6 +159,7 @@ void eliminarBotones(List* botones) {
     }
 }
 
+// función de comparación para el mapa
 int lower_than(void* key1, void* key2)
 {
     int a = *(int*)key1;
@@ -164,8 +168,7 @@ int lower_than(void* key1, void* key2)
     return 0;
 }
 
-bool sePuedeJugar(Carta*, Carta*);
-
+// termina el turno del jugador actual y actualiza el estado
 void terminarTurno(Estado* estado)
 {
     estado->jugadorActual += estado->direccion;
@@ -174,6 +177,7 @@ void terminarTurno(Estado* estado)
     printf("turno de jugador %i\n", estado->jugadorActual);
 }
 
+// saca la última carta contenida en el mazo
 void sacarCarta(Estado* estado, Jugador* jugador, ALLEGRO_SAMPLE* sonido) {
     Carta* carta = popFront(estado->mazo);
     pushBack(jugador->listaCartas, carta);
@@ -212,6 +216,7 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
 {
     List* lista = jugador->listaCartas;
     Carta* carta = firstList(lista);
+    // encuentra una carta usando su posición
     for (int i = 0; i < posCarta - 1; i++)
     {
         carta = nextList(lista);
@@ -236,14 +241,18 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
         return false;
     }
 
+    // si no quedan cartas en el mazo, se genera uno nuevo
     if (countList(estado->mazo) == 0) {
         generarMazo(estado->mazo);
     }
 
+    // si el jugador no tiene cartas, se termina el juego y muestra la puntuación
     if (((countList(jugador->listaCartas)) == 0)) {
         calcularPuntuacion(estado);
         menuPuntuacion(queue, estado);
     }
+
+    // cartas especiales
 
     if (carta->especial == 4) {
         if (estado->numJugadores == 2) {
@@ -280,6 +289,7 @@ bool jugarCarta(Estado* estado, Jugador* jugador, int posCarta, ALLEGRO_EVENT_QU
     return true;
 }
 
+// revisa si una carta se puede jugar y retorna un bool
 bool sePuedeJugar(Carta* cartaJugada, Carta* carta) {
     if ((carta->especial == 0) || (carta->especial == 1)) return true;
 
@@ -296,6 +306,7 @@ bool sePuedeJugar(Carta* cartaJugada, Carta* carta) {
     return false;
 }
 
+// muestra la cantidad de cartas que el resto de los jugadores tiene
 void dibujarEstado(Estado* estado, ALLEGRO_FONT* font) {
     int numJugadores = estado->numJugadores;
     Jugador* jugador = NULL;
@@ -307,6 +318,7 @@ void dibujarEstado(Estado* estado, ALLEGRO_FONT* font) {
     }
 }
 
+// muestra la puntuación de todos los jugadores
 void dibujarPuntuacion(Estado* estado, ALLEGRO_FONT* font) {
     int numJugadores = estado->numJugadores;
     Pair *puntuacion = firstTreeMap(estado->puntuacion);
@@ -321,6 +333,7 @@ void dibujarPuntuacion(Estado* estado, ALLEGRO_FONT* font) {
     }
 }
 
+// función de bot. elige el color con las mayores posibilidades
 int elegirMejorColor(List* listaCartas) {
     int max = 0;
     int num = 0;
@@ -375,6 +388,7 @@ int calcularPosibilidades(List* cartas, Carta* cartaJugada) {
     return num - 1;
 }
 
+// función de bot. encuentra la carta con las mayores posibilidades
 int encontrarMejorCarta(Estado* estado, List* listaCartas) {
     Carta* cartaJugada = firstList(listaCartas);
     int maxIdx = -1;
@@ -395,6 +409,7 @@ int encontrarMejorCarta(Estado* estado, List* listaCartas) {
     return maxIdx;
 }
 
+// recibe la posición del mouse y una lista de botones, retorna el id de un botón si la posición del mouse está sobre este
 int encontrarBoton(List* botones, int mx, int my)
 {
     Boton* boton = firstList(botones);
@@ -416,6 +431,7 @@ void dibujarBoton(Boton* boton)
     al_draw_bitmap(boton->imagen, boton->posX - (ancho / 2), boton->posY - (largo / 2), 0);
 }
 
+// muestra una lista de botones
 void dibujarBotones(List* botones)
 {
     Boton* boton = firstList(botones);
@@ -481,6 +497,7 @@ void dibujarCarta(ALLEGRO_BITMAP* bitCartas, Carta* carta, int x, int y, bool es
     }
 }
 
+// muestra las cartas en la mano del jugador
 void dibujarCartas(Jugador* jugador, ALLEGRO_BITMAP* bitCartas)
 {
     List* lista = jugador->listaCartas;
@@ -504,6 +521,7 @@ void dibujarCartas(Jugador* jugador, ALLEGRO_BITMAP* bitCartas)
     }
 }
 
+// recibe la posición del mouse, retorna la posición de la carta si el mouse está sobre una
 int encontrarCarta(int mx, int my, int cantidad)
 {
     int i;
@@ -515,13 +533,14 @@ int encontrarCarta(int mx, int my, int cantidad)
             if ((mx > (100 * i - 94 / 2)) && (mx < (100 * i + 94 / 2)))
                 return dif + i;
 
-        if (((my > 455) && (my < 530)))
+        if (((my > 455) && (my < 530)) && dif != 0)
             if ((mx > (100 * i - 94 / 2)) && (mx < (100 * i + 94 / 2)))
                 return i;
     }
     return -1;
 }
 
+// recibe el color que el jugador quiere usar
 int asignarColor(ALLEGRO_EVENT_QUEUE* queue) {
     List* botones = createList();
     int mx = 0, my = 0, click, botonMouse;
@@ -812,7 +831,6 @@ void menuConfiguraciones(ALLEGRO_EVENT_QUEUE* queue, Estado* estado, ALLEGRO_AUD
     }
 }
 
-// empieza el juego
 void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* font, Estado* estado) {
     ALLEGRO_EVENT event;
 
@@ -913,6 +931,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
 
                 }
             }
+            // encuentra la carta que está bajo el mouse y la juega
             botonMouse = encontrarBoton(botones, mx, my);
             if (botonMouse != -1)
             {
@@ -930,6 +949,7 @@ void menuEmpezarJuego(ALLEGRO_EVENT_QUEUE* queue, int numPlayers, ALLEGRO_FONT* 
 
         if (al_is_event_queue_empty(queue))
         {
+            // muestra los componentes del juego en la pantalla
             al_clear_to_color(al_map_rgb(255, 255, 255));
 
 
